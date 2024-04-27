@@ -1,5 +1,5 @@
-#include "neo6502.h"
-#include "api.h"
+#include "neo6502.hpp"
+#include "api.hpp"
 
 void SetCursorPosition(uint8_t x_pos , uint8_t y_pos)
 {
@@ -591,8 +591,8 @@ void SetCursorOnOff(uint8_t statecursor){
 };
 
 mouse_state GetMouseState(){
-    
     mouse_state mouse_data;
+    
     *API_FUNCTION_ADDR  = API_FN_GET_MOUSE_STATE;
     *API_COMMAND_ADDR   = API_GROUP_MOUSE;  
     mouse_data.mouse_x = API_PARAMETERS_ADDR[1];
@@ -603,11 +603,14 @@ mouse_state GetMouseState(){
     mouse_data.mouse_y = mouse_data.mouse_y <<8;
     mouse_data.mouse_y = API_PARAMETERS_ADDR[2];
 
-    mouse_data.btn1 = (API_PARAMETERS_ADDR[4] & 0x01);
-    mouse_data.btn2 = ((API_PARAMETERS_ADDR[4]>>1) & 0x01);
- 
-    return mouse_data;
+    mouse_data.buttons = API_PARAMETERS_ADDR[4];
+
+    //mouse_data->leftBtn = (API_PARAMETERS_ADDR[4] & 0x01);
+    //mouse_data->rigthBtn = ((API_PARAMETERS_ADDR[4]>>1) & 0x01);
+  return mouse_data;
+
 };
+
 
 uint8_t TestMousePresent(){
 

@@ -1,12 +1,12 @@
-
+#include <stdio.h>
 
 typedef struct mouse_state
 {
     unsigned int mouse_x;
     unsigned int mouse_y;
-    uint8_t btn1;
-    uint8_t btn2;
+    uint8_t buttons; 
 } mouse_state;
+
 
 
 

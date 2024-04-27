@@ -1,38 +1,39 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
-#include "gui.h"
+#include "mouse.hpp"
+#include "gui.hpp"
+
 
 
 
 char buffer [sizeof(int)*40+1];
+//mouse_state mouseState;
 
+extern char tabname[TAB_COUNT][7];
+extern char coordinatesMouse[TAB_COUNT][4];
 
 int main(){
-    uint8_t i, mouseIsPresent=0;
-    mouse_state mouseState;
-    int command;
+    Mouse mouse;
+    Gui gui;
 
-    // Is mouse present? 
-    //mouseIsPresent= TestMousePresent();
+    mouse.CursorOnOff(mouse.CURSORON);
+    mouse.ChoiseMouseCursor(mouse.SHAPE_ARROW);
 
-    //print on the screen
-    clrscr();
-    sprintf(buffer,"mouse not present %d",mouseIsPresent);
-    PrintOnScreen(10, 10,buffer);
-    
-    // Mouse Cursor ON
-    SetCursorOnOff(1);
 
-    // Set mouse Cursor shape
-    SelectMouseCursor(0);
+    gui.DrawScreen();
 
-    DrawScreen();
 
     while (1)
     {
-       command = checkMouseAndKey();
- 
+
+    mouse.Read();
+    sprintf(buffer," X:%d  Y:%d B1:%d B2:%d",mouse.X, mouse.Y, mouse.leftBtnUp, mouse.rigthBtnUp);
+    buffer[0]=40;
+    Gfx_DrawString(1,80,buffer);
+    sprintf(buffer," mouse change: %d",mouse.btnChanged);
+    Gfx_DrawString(40,40,buffer); 
+    nop_delay(7000);
 
       /*   
             //CheckMouse();

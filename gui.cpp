@@ -1,10 +1,8 @@
-#include "gui.h"
-#include "const.h"
-
-char  strText [sizeof(int)*40+1];
+#include "gui.hpp"
+#include "api.hpp"
 
 
-void  DrawTabs(){
+void  Gui::DrawTabs(){
     uint8_t t;
 
     SetSolidFlag(1);
@@ -17,7 +15,7 @@ void  DrawTabs(){
     
 };
 
-void  DrawTextTabs(){
+void  Gui::DrawTextTabs(){
     uint8_t t;
     char * tmpstr;
 
@@ -35,13 +33,13 @@ void  DrawTextTabs(){
     
 };
 
-void PrintOnScreen(uint8_t x, uint8_t y, char * text){
+void Gui::PrintOnScreen(uint8_t x, uint8_t y, char * text){
     
     gotoxy(x,y);
     puts(text);
 }
 
-void DrawBoard(){
+void Gui::DrawBoard(){
 
     SetSolidFlag(1);
     SetColor(COLOR_GREEN);
@@ -49,7 +47,7 @@ void DrawBoard(){
 
 }
 
-void DrawBoardText(char * str){
+void Gui::DrawBoardText(char * str){
 
     //SetSolidFlag(0);
     SetDrawDefaults(0xf0,COLOR_WHITE, 1, 1, 0);
@@ -58,13 +56,17 @@ void DrawBoardText(char * str){
 
 }
 
-void  DrawArea(){
+void Gui::DrawArea(uint8_t tab)){
 
     SetSolidFlag(1);
     SetColor(COLOR_DARK_GRAY);
 
     DrawRectangle(0,11,320,229);
-    
+
+    sprintf(strText," TAB %d",tab);
+    strText[0]=5;
+    Gfx_DrawString(50,200,strText);
+
 };
 /*
 void  DrawSelTabs(uint8_t tab, uint8_t col){
@@ -80,36 +82,35 @@ char * tmpstr;
 */
 
 
-void DrawScreen(){
+void Gui::DrawScreen(){
     ClearScreen();
     DrawTabs();
     DrawTextTabs();
     DrawBoard();
-    DrawArea();
+
+    // If the firt time select the first tab
+    if (currentTab==0) currentTab =1;
+
+    switch (currentTab)
+    {
+    case 1:
+        DrawArea(1);
+        break;
+    case 2:
+        DrawArea(2);
+        break;
+    case 3:
+        DrawArea(3);
+        break;
+    case 4:
+        DrawArea(4);
+        break;
+    
+    default:
+        break;
+    }
+
     //DrawSelTabs(1, COLOR_WHITE);
   
-    };
+};
 
-int checkMouseAndKey(){
-    mouse_state mouseState;
-
-    SetSolidFlag(1);
-
-    mouseState=GetMouseState();
-    sprintf(strText," mouse position X: %d  Y: %d Btn1: %d Btn2: %d",mouseState.mouse_x, mouseState.mouse_y, mouseState.btn1, mouseState.btn2);
-    DrawBoardText(strText);
-
-    if (mouseState.btn1!=0) //checkArea(); 
-    {
-        for (int i = 0; i < TAB_COUNT; i++)
-        {
-            if (mouseState.mouse_x > coordinatesMouse[i][0] && mouseState.mouse_x < coordinatesMouse[i][2] &&
-                mouseState.mouse_y > coordinatesMouse[i][1] && mouseState.mouse_y < coordinatesMouse[i][3]) {
-                    sprintf(strText," TAB %d",i+1);
-                    Gfx_DrawString(40,40,strText);
-                    break;
-                }
-        }
-    }
-    return 1;
-}
