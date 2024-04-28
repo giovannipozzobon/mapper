@@ -16,21 +16,21 @@ void Mouse::Read() {
     if (dblClick>0) dblClick--;
 
     //read the mouse state from api
-    mousestate = GetMouseState();
+    api.GetMouseState();
     
     // check the movment
-    X = mousestate.mouse_x;
-    Y = mousestate.mouse_y;        
+    X = api.mouse_data.mouse_x;
+    Y = api.mouse_data.mouse_y;        
     move();
 
     // check button 
-    btnChanged = mousestate.buttons ^ mBtnPrev;
-    mBtnPrev = mousestate.buttons;
+    btnChanged = api.mouse_data.buttons ^ mBtnPrev;
+    mBtnPrev = api.mouse_data.buttons;
 
-    leftBtnDown = (btnChanged & mousestate.buttons & 1) !=0;
-    rigthBtnDown = (btnChanged & mousestate.buttons & 2) !=0;
-    leftBtnUp = ((btnChanged & 1) != 0) && ((mousestate.buttons & 1) ==0);
-    rigthBtnUp = ((btnChanged & 2) != 0) && ((mousestate.buttons & 2) ==0);
+    leftBtnDown = (btnChanged & api.mouse_data.buttons & 1) !=0;
+    rigthBtnDown = (btnChanged & api.mouse_data.buttons & 2) !=0;
+    leftBtnUp = ((btnChanged & 1) != 0) && ((api.mouse_data.buttons & 1) ==0);
+    rigthBtnUp = ((btnChanged & 2) != 0) && ((api.mouse_data.buttons & 2) ==0);
 
     if (leftBtnUp) {  
         dblClick = DBL_CLICK_LEN;
@@ -39,21 +39,21 @@ void Mouse::Read() {
 }
 
 bool Mouse::IsPresent(){
-    return TestMousePresent();
+    return api.TestMousePresent();
 };
 
 // Mouse Cursor ON
 void Mouse::CursorOnOff(uint8_t state){
-    SetCursorOnOff(state);
+    api.SetCursorOnOff(state);
 };
 
 // Set mouse Cursor shape
 void Mouse::ChoiseMouseCursor(uint8_t shape){
-    SelectMouseCursor(shape);
+    api.SelectMouseCursor(shape);
 };
 
 // Set mouse Cursor shape
 void Mouse::MoveMouseCursor(int x, int y){
-    MoveCursorMouse(x,y);
+    api.MoveCursorMouse(x,y);
 };
 

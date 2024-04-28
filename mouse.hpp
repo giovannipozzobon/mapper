@@ -10,7 +10,7 @@ private:
     uint8_t mBtnPrev;
     int lastX;
     int lastY;
-    mouse_state mousestate;
+    Api api;
     const uint8_t DBL_CLICK_LEN = 16;
     
  

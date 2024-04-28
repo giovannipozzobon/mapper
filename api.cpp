@@ -1,17 +1,7 @@
-#include "neo6502.hpp"
+//#include "neo6502.hpp"
 #include "api.hpp"
 
-void SetCursorPosition(uint8_t x_pos , uint8_t y_pos)
-{
-  *API_FUNCTION_ADDR     = API_FN_CURSOR_POS ;
-  API_PARAMETERS_ADDR[0] = x_pos             ;
-  API_PARAMETERS_ADDR[1] = y_pos             ;
-  *API_COMMAND_ADDR      = API_GROUP_CONSOLE ;
-}
-
-
-
-void ResetChannelSound(uint8_t nr_channel)
+void Api::ResetChannelSound(uint8_t nr_channel)
 {
   *API_FUNCTION_ADDR     = API_FN_SOUND_CH_RESET;
   API_PARAMETERS_ADDR[0] = nr_channel        ;
@@ -20,7 +10,7 @@ void ResetChannelSound(uint8_t nr_channel)
 
 
 
-void PlaySoundChannel(uint8_t nr_channel, uint8_t sfx)
+void Api::PlaySoundChannel(uint8_t nr_channel, uint8_t sfx)
 {
   *API_FUNCTION_ADDR     = API_FN_PLAY_SOUND;
   API_PARAMETERS_ADDR[0] = nr_channel;
@@ -28,7 +18,7 @@ void PlaySoundChannel(uint8_t nr_channel, uint8_t sfx)
   *API_COMMAND_ADDR      = API_GROUP_SOUND ;
 }
 
-void Gfx_DrawString(int x_pos , int y_pos, char * str)
+void Api::Gfx_DrawString(int x_pos , int y_pos, char * str)
 {
 	int ptr = (int) &str[0];
 
@@ -42,7 +32,7 @@ void Gfx_DrawString(int x_pos , int y_pos, char * str)
   	*API_COMMAND_ADDR      = API_GROUP_GRAPHICS ;
 }
 
-void write (const unsigned char* buf, unsigned count) {
+void Api::write (const unsigned char* buf, unsigned count) {
  	volatile unsigned char *cmd = (unsigned char *)0xFF00;
  	while (count--) {
  		while(*API_COMMAND_ADDR) {};   
@@ -53,14 +43,14 @@ void write (const unsigned char* buf, unsigned count) {
 }
 
 
-void DisplayDirectory()
+void Api::DisplayDirectory()
 {
 	*API_FUNCTION_ADDR     = API_FN_CAT_DIR;
   *API_COMMAND_ADDR      = API_GROUP_FILE ;
 
 }
 
-void OpenFile(uint8_t channel, const unsigned char *  fileName, uint8_t mode)
+void Api::OpenFile(uint8_t channel, const unsigned char *  fileName, uint8_t mode)
 {
 	volatile int ptr = (volatile int) &fileName[0];
   	*API_FUNCTION_ADDR     = API_FN_OPEN_FILE;
@@ -74,7 +64,7 @@ void OpenFile(uint8_t channel, const unsigned char *  fileName, uint8_t mode)
 
 }
 
-void CloseFile(uint8_t channel)
+void Api::CloseFile(uint8_t channel)
 {
   	*API_FUNCTION_ADDR     = API_FN_CLOSE_FILE;      
   	API_PARAMETERS_ADDR[0] = channel;
@@ -84,7 +74,7 @@ void CloseFile(uint8_t channel)
 
 }
 
-uint8_t WriteFile(uint8_t channel, int memory, int nrbyte)
+uint8_t Api::WriteFile(uint8_t channel, int memory, int nrbyte)
 {
   	int nr_written_byte;
     *API_FUNCTION_ADDR     = API_FN_WRITE_FILE;
@@ -104,7 +94,7 @@ uint8_t WriteFile(uint8_t channel, int memory, int nrbyte)
 }
 
 
-uint8_t LoadFile( int memory, const unsigned char * fileName)
+uint8_t Api::LoadFile( int memory, const unsigned char * fileName)
 {
 	volatile int ptr = (volatile int) &fileName[0];
   	*API_FUNCTION_ADDR     = API_FN_LOAD_FILE;
@@ -118,7 +108,7 @@ uint8_t LoadFile( int memory, const unsigned char * fileName)
 	  return API_PARAMETERS_ADDR[0];
 }
 
-uint8_t SaveFile( int memory, int nrbyte , const unsigned char * fileName)
+uint8_t Api::SaveFile( int memory, int nrbyte , const unsigned char * fileName)
 {
 	volatile int ptr = (volatile int) &fileName[0];
   	*API_FUNCTION_ADDR     = API_FN_STORE_FILE;
@@ -137,7 +127,7 @@ uint8_t SaveFile( int memory, int nrbyte , const unsigned char * fileName)
 
 
 
-void DrawPixel(int x,int y) {
+void Api::DrawPixel(int x,int y) {
 	volatile unsigned char *cmd = (volatile unsigned char *)0xFF00;
     while(*API_COMMAND_ADDR) {};                         // Waits for the previous command to finish.
   	API_PARAMETERS_ADDR[0] = x & 0xFF; 
@@ -151,7 +141,7 @@ void DrawPixel(int x,int y) {
 
 }
 
-void DrawLine(int x1,int y1,int x2,int y2) {
+void Api::DrawLine(int x1,int y1,int x2,int y2) {
 	volatile unsigned char *cmd = (volatile unsigned char *)0xFF00;
     
     while(*API_COMMAND_ADDR) {};                       // Waits for the previous command to finish.
@@ -170,7 +160,7 @@ void DrawLine(int x1,int y1,int x2,int y2) {
 
 }
 
-void DrawRectangle(int x1,int y1,int x2,int y2) {
+void Api::DrawRectangle(int x1,int y1,int x2,int y2) {
 	volatile unsigned char *cmd = (volatile unsigned char *)0xFF00;
     while(*API_COMMAND_ADDR) {};                         // Waits for the previous command to finish.
     API_PARAMETERS_ADDR[0] = x1 & 0xFF;                      // P0P1
@@ -189,7 +179,7 @@ void DrawRectangle(int x1,int y1,int x2,int y2) {
 }
 
 
-void DrawImage(int x,int y, uint8_t imageID) {
+void Api::DrawImage(int x,int y, uint8_t imageID) {
 	
     while(*API_COMMAND_ADDR) {};                         // Waits for the previous command to finish.
   	API_PARAMETERS_ADDR[0] = x & 0xFF; 
@@ -206,7 +196,7 @@ void DrawImage(int x,int y, uint8_t imageID) {
 
 
 
-uint8_t LoadGrafix(const unsigned char * file){   
+uint8_t Api::LoadGrafix(const unsigned char * file){   
 
 	volatile int ptr = (volatile int) &file[0];	
 
@@ -231,7 +221,7 @@ uint8_t LoadGrafix(const unsigned char * file){
 //in the graphics system, bit 7 is clear), P6 the flip value (bit 0 horizontal, bit 1 vertical, 
 //bit 2-7 clear, P7 sets the anchor point.
 
-void DrawSprite(uint8_t id, int x, int y, uint8_t image) {
+void Api::DrawSprite(uint8_t id, int x, int y, uint8_t image) {
 
     while(*API_COMMAND_ADDR) {};                       // Waits for the previous command to finish.
     API_PARAMETERS_ADDR[0] = id;								//P0 
@@ -249,7 +239,7 @@ void DrawSprite(uint8_t id, int x, int y, uint8_t image) {
 
 }
 
-void MoveSprite(uint8_t id, int x, int y) {
+void Api::MoveSprite(uint8_t id, int x, int y) {
 
    	while(*API_COMMAND_ADDR) {};                       // Waits for the previous command to finish.
     API_PARAMETERS_ADDR[0] = id;								//P0 
@@ -266,7 +256,7 @@ void MoveSprite(uint8_t id, int x, int y) {
     while(*API_COMMAND_ADDR) {};                          // Wait for the command to finish (not strictly required)
 }
 
-uint8_t DistanceSprites(uint8_t id_sprite1, uint8_t id_sprite2, uint8_t distance) {
+uint8_t Api::DistanceSprites(uint8_t id_sprite1, uint8_t id_sprite2, uint8_t distance) {
 
    	while(*API_COMMAND_ADDR) {};                       // Waits for the previous command to finish.
     API_PARAMETERS_ADDR[0] = id_sprite1;								//P0 
@@ -280,7 +270,7 @@ uint8_t DistanceSprites(uint8_t id_sprite1, uint8_t id_sprite2, uint8_t distance
     return API_PARAMETERS_ADDR[0];                         // Wait for the command to finish (not strictly required)
 }
 
-void HideSprite(uint8_t id) {
+void Api::HideSprite(uint8_t id) {
 
     while(*API_COMMAND_ADDR) {};                       // Waits for the previous command to finish.
     API_PARAMETERS_ADDR[0] = id;								       //P0 
@@ -291,7 +281,7 @@ void HideSprite(uint8_t id) {
 
 }
 
-void ResetSprite() {
+void Api::ResetSprite() {
 
     while(*API_COMMAND_ADDR) {};                          // Waits for the previous command to finish.
     *API_FUNCTION_ADDR    = API_FN_RESET_SPRITE;					 // Reset Sprite
@@ -301,7 +291,7 @@ void ResetSprite() {
 }
 
 
-uint8_t CheckJoypad(){
+uint8_t Api::CheckJoypad(){
 
 	while(*API_COMMAND_ADDR) {}
 	
@@ -314,7 +304,7 @@ uint8_t CheckJoypad(){
 }
 
 
-int readTimer(){
+int Api::readTimer(){
 	int timer;
 
   *API_FUNCTION_ADDR     = API_FN_TIMER ;
@@ -330,7 +320,7 @@ int readTimer(){
 	return timer;	
 };
 
-void waitXcycleclock(int cicli){
+void Api::waitXcycleclock(int cicli){
 	int timer1, timer2, diff,scambia;
 	timer1= readTimer();
 	timer2= readTimer();
@@ -345,7 +335,7 @@ void waitXcycleclock(int cicli){
 
 }
 
-void ResetPalette(){
+void Api::ResetPalette(){
     // Reset the palette
     *API_FUNCTION_ADDR     = API_RESET_PALETTE ;
     *API_COMMAND_ADDR      = API_GROUP_GRAPHICS ;
@@ -353,7 +343,7 @@ void ResetPalette(){
 }
 
 
-void SetDrawDefaults(uint8_t _and, uint8_t _xor, uint8_t solid, uint8_t dimension, uint8_t flip) {
+void Api::SetDrawDefaults(uint8_t _and, uint8_t _xor, uint8_t solid, uint8_t dimension, uint8_t flip) {
 	  //SetColor(0xf0,7,1,1,0);
     //0xf0 use when is a image and second parameter is color
 	
@@ -370,7 +360,7 @@ void SetDrawDefaults(uint8_t _and, uint8_t _xor, uint8_t solid, uint8_t dimensio
 
 }
 
-void SetCurrentTileMap(unsigned char * addr, int x, int y){
+void Api::SetCurrentTileMap(unsigned char * addr, int x, int y){
 	
 	volatile int ptr = (int) &addr[0];	
 
@@ -390,7 +380,7 @@ void SetCurrentTileMap(unsigned char * addr, int x, int y){
 
 }
 
-void DrawTileMap(int x1, int y1, int x2, int y2){
+void Api::DrawTileMap(int x1, int y1, int x2, int y2){
 
 	while(*API_COMMAND_ADDR) {}
 								 
@@ -410,7 +400,7 @@ void DrawTileMap(int x1, int y1, int x2, int y2){
 
 }
 
-unsigned int nop_delay(unsigned int delay) {
+unsigned int Api::nop_delay(unsigned int delay) {
     unsigned int timer;
     for(timer=0; timer<delay*7; timer++) {
         __asm__ ("NOP");
@@ -419,7 +409,7 @@ unsigned int nop_delay(unsigned int delay) {
 }
 
 
-void SetPalette(uint8_t color, uint8_t r, uint8_t g, uint8_t b){
+void Api::SetPalette(uint8_t color, uint8_t r, uint8_t g, uint8_t b){
 
 	while(*API_COMMAND_ADDR) {}
 								 
@@ -435,7 +425,7 @@ void SetPalette(uint8_t color, uint8_t r, uint8_t g, uint8_t b){
 
 }
 
-void SetColor(uint8_t color)
+void Api::SetColor(uint8_t color)
 {
   *API_FUNCTION_ADDR     = API_SET_COLOR;
   API_PARAMETERS_ADDR[0] = color        ;
@@ -443,7 +433,7 @@ void SetColor(uint8_t color)
   while(*API_COMMAND_ADDR) {};
 }
 
-void SetSolidFlag(uint8_t flag)
+void Api::SetSolidFlag(uint8_t flag)
 {
   *API_FUNCTION_ADDR     = API_SET_SOLID_FLAG;
   API_PARAMETERS_ADDR[0] = flag        ;
@@ -451,7 +441,7 @@ void SetSolidFlag(uint8_t flag)
   while(*API_COMMAND_ADDR) {};
 }
 
-void ClearScreen(){
+void Api::ClearScreen(){
     // Clear Screen
     *API_FUNCTION_ADDR     = API_FN_CLEAR_SCREEN ;
     *API_COMMAND_ADDR      = API_GROUP_CONSOLE;
@@ -459,7 +449,7 @@ void ClearScreen(){
 
 } 
 
-char CheckKeyboardArray(){
+char Api::CheckKeyboardArray(){
     // Check keyboard array
  
     *API_FUNCTION_ADDR     = API_FN_CHECK_STATUS ;
@@ -468,7 +458,7 @@ char CheckKeyboardArray(){
 
 } 
 
-void ReturnToBasic(){
+void Api::ReturnToBasic(){
     // Return to basic
 
     *API_FUNCTION_ADDR     = API_FN_BASIC ;
@@ -478,7 +468,7 @@ void ReturnToBasic(){
 } 
 
 // Get character from keyboard
-int inkey() {
+int Api::inkey() {
     while(*API_COMMAND_ADDR) {}  
     *API_FUNCTION_ADDR     = API_FN_READ_CHAR ;
     *API_COMMAND_ADDR      = API_GROUP_CONSOLE ;                 // Group 2, Command 1
@@ -487,7 +477,7 @@ int inkey() {
 }
 
 
-int cgetc() {
+int Api::cgetc() {
   char ch=0;
   while(ch==0) {
     ch=inkey();
@@ -497,17 +487,17 @@ int cgetc() {
 
 
 // Position cursor (API Group 2, Function 7)
-void gotoxy(uint8_t sx, uint8_t sy)
+void Api::gotoxy(uint8_t sx, uint8_t sy)
 {
+  *API_FUNCTION_ADDR  = API_FN_CURSOR_POS  ;
   API_PARAMETERS_ADDR[0] = sx;
   API_PARAMETERS_ADDR[1] = sy;
-  *API_FUNCTION_ADDR  = API_FN_CURSOR_POS  ;
   *API_COMMAND_ADDR   = API_GROUP_CONSOLE ;     
 }
 
 
 // Put a character
-void cputc(char ch) {
+void Api::cputc(char ch) {
 
     while(*API_COMMAND_ADDR) {}  
     API_PARAMETERS_ADDR[0] = ch;
@@ -516,18 +506,18 @@ void cputc(char ch) {
 }
 
 // Put a character at screen coord
-void cputcxy(int sx, int sy, char ch) {
+void Api::cputcxy(int sx, int sy, char ch) {
     gotoxy(sx,sy);
     cputc(ch);
 }
 
 // Clear screen
-void clrscr() {
+void Api::clrscr() {
     cputc(12);
     gotoxy(0,0);
 }
 
-void ClearKeyboardArray(){
+void Api::ClearKeyboardArray(){
     // Clear keyboard array
     while(CheckKeyboardArray()==0xff) {
       cgetc();
@@ -537,7 +527,7 @@ void ClearKeyboardArray(){
  
 
 // Set speed of serial
-void SetSpeed_ProtocolUART(uint32_t baudrate) { 
+void Api::SetSpeed_ProtocolUART(uint32_t baudrate) { 
 
     while(*API_COMMAND_ADDR) {}  
     API_PARAMETERS_ADDR[0] = baudrate & 0xFF;                      
@@ -551,7 +541,7 @@ void SetSpeed_ProtocolUART(uint32_t baudrate) {
 }
 
 // Write byte to UART
-void WritelUART(uint8_t chr) {
+void Api::WritelUART(uint8_t chr) {
 
     while(*API_COMMAND_ADDR) {}  
     API_PARAMETERS_ADDR[0] = chr;                                          
@@ -561,7 +551,7 @@ void WritelUART(uint8_t chr) {
 }
 
 // Write string to UART
-void WriteStringTolUART(char * ptr_str){
+void Api::WriteStringTolUART(char * ptr_str){
   int i=0;
   while(ptr_str[i]!= 0) {
     WritelUART(ptr_str[i]);
@@ -570,7 +560,7 @@ void WriteStringTolUART(char * ptr_str){
 }
 
 
-void MoveCursorMouse(int x,int y){
+void Api::MoveCursorMouse(int x,int y){
 
     API_PARAMETERS_ADDR[0] = x & 0xFF;                      // P0P1
     API_PARAMETERS_ADDR[1] = x >> 8;
@@ -582,7 +572,7 @@ void MoveCursorMouse(int x,int y){
 
 };
 
-void SetCursorOnOff(uint8_t statecursor){
+void Api::SetCursorOnOff(uint8_t statecursor){
 
     API_PARAMETERS_ADDR[0] = statecursor;   
     *API_FUNCTION_ADDR  = API_FN_MOUSE_CURS_ON_OFF;
@@ -590,8 +580,7 @@ void SetCursorOnOff(uint8_t statecursor){
 
 };
 
-mouse_state GetMouseState(){
-    mouse_state mouse_data;
+void Api::GetMouseState(){
     
     *API_FUNCTION_ADDR  = API_FN_GET_MOUSE_STATE;
     *API_COMMAND_ADDR   = API_GROUP_MOUSE;  
@@ -607,12 +596,11 @@ mouse_state GetMouseState(){
 
     //mouse_data->leftBtn = (API_PARAMETERS_ADDR[4] & 0x01);
     //mouse_data->rigthBtn = ((API_PARAMETERS_ADDR[4]>>1) & 0x01);
-  return mouse_data;
 
 };
 
 
-uint8_t TestMousePresent(){
+uint8_t Api::TestMousePresent(){
 
     *API_FUNCTION_ADDR  = API_FN_TEST_MOUSE_EXIST;
     *API_COMMAND_ADDR   = API_GROUP_MOUSE;   
@@ -620,7 +608,7 @@ uint8_t TestMousePresent(){
 
 };
 
-uint8_t SelectMouseCursor(uint8_t shape){
+uint8_t Api::SelectMouseCursor(uint8_t shape){
 
     API_PARAMETERS_ADDR[0] = shape;   
     *API_FUNCTION_ADDR  = API_FN_SEL_MOUSE_CURSOR;

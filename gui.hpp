@@ -2,6 +2,7 @@
 #define GUI_HPP
 
 #include <stdio.h>
+#include "api.hpp"
 
 
 #define TAB_WIDTH 48
@@ -40,18 +41,20 @@ private:
 
     };
 
+    Api api;
     char  strText [sizeof(int)*40+1];
     uint8_t currentTab=0;
 
     void DrawTabs();
     void DrawTextTabs();
     void DrawBoard();
-    void DrawBoardText(char * str);
     void DrawArea(uint8_t tab);
 
 public:
 
     void DrawScreen();
+
+    void DrawBoardText(char * str);
 
     void PrintOnScreen(uint8_t x, uint8_t y, char * text);
 

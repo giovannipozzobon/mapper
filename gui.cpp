@@ -3,69 +3,67 @@
 
 
 void  Gui::DrawTabs(){
-    uint8_t t;
 
-    SetSolidFlag(1);
-    SetColor(COLOR_DARK_GRAY);
+    api.SetSolidFlag(1);
+    api.SetColor(COLOR_DARK_GRAY);
 
-    for (t = 0; t < TAB_COUNT; t++)
+    for (uint8_t t = 0; t < TAB_COUNT; t++)
     {
-        DrawRectangle(t*TAB_WIDTH,0,t*TAB_WIDTH+TAB_WIDTH-2,10);
+        api.DrawRectangle(t*TAB_WIDTH,0,t*TAB_WIDTH+TAB_WIDTH-2,10);
     }
     
 };
 
 void  Gui::DrawTextTabs(){
-    uint8_t t;
     char * tmpstr;
 
-    SetSolidFlag(0);
+    api.SetSolidFlag(0);
     
   
-    for (t = 0; t < TAB_COUNT; t++)
+    for (uint8_t t = 0; t < TAB_COUNT; t++)
     {
         tmpstr = tabname[t];
-        SetColor(COLOR_BLACK);
-        Gfx_DrawString(t*TAB_WIDTH+3,2,tmpstr);
-        SetColor(COLOR_WHITE);
-        Gfx_DrawString(t*TAB_WIDTH+2,1,tmpstr);
+        api.SetColor(COLOR_BLACK);
+        api.Gfx_DrawString(t*TAB_WIDTH+3,2,tmpstr);
+        api.SetColor(COLOR_WHITE);
+        api.Gfx_DrawString(t*TAB_WIDTH+2,1,tmpstr);
     }
     
 };
 
 void Gui::PrintOnScreen(uint8_t x, uint8_t y, char * text){
     
-    gotoxy(x,y);
+    api.gotoxy(x,y);
     puts(text);
 }
 
 void Gui::DrawBoard(){
 
-    SetSolidFlag(1);
-    SetColor(COLOR_GREEN);
-    DrawRectangle(0,230,320-1,240-1);
+    api.SetSolidFlag(1);
+    api.SetColor(COLOR_GREEN);
+    api.DrawRectangle(0,230,320-1,240-1);
 
 }
 
 void Gui::DrawBoardText(char * str){
 
     //SetSolidFlag(0);
-    SetDrawDefaults(0xf0,COLOR_WHITE, 1, 1, 0);
+    api.SetDrawDefaults(0xf0,COLOR_WHITE, 1, 1, 0);
     //SetColor(COLOR_WHITE);
-    Gfx_DrawString(30,232,str);
+    api. Gfx_DrawString(30,232,str);
 
 }
 
-void Gui::DrawArea(uint8_t tab)){
+void Gui::DrawArea(uint8_t tab){
 
-    SetSolidFlag(1);
-    SetColor(COLOR_DARK_GRAY);
+    api.SetSolidFlag(1);
+    api.SetColor(COLOR_DARK_GRAY);
 
-    DrawRectangle(0,11,320,229);
+    api.DrawRectangle(0,11,320,229);
 
     sprintf(strText," TAB %d",tab);
     strText[0]=5;
-    Gfx_DrawString(50,200,strText);
+    api.Gfx_DrawString(50,200,strText);
 
 };
 /*
@@ -83,7 +81,7 @@ char * tmpstr;
 
 
 void Gui::DrawScreen(){
-    ClearScreen();
+    api.ClearScreen();
     DrawTabs();
     DrawTextTabs();
     DrawBoard();

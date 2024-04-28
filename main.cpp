@@ -3,6 +3,9 @@
 #include <string.h>
 #include "mouse.hpp"
 #include "gui.hpp"
+#include "util.hpp"
+#include "keyboard.hpp"
+#include "api.hpp"
 
 
 
@@ -10,12 +13,17 @@
 char buffer [sizeof(int)*40+1];
 //mouse_state mouseState;
 
-extern char tabname[TAB_COUNT][7];
-extern char coordinatesMouse[TAB_COUNT][4];
+//extern char tabname[TAB_COUNT][7];
+//extern char coordinatesMouse[TAB_COUNT][4];
 
 int main(){
     Mouse mouse;
     Gui gui;
+    Util util;
+    Keyboard keyboard;
+
+    int k; 
+    char key='0';
 
     mouse.CursorOnOff(mouse.CURSORON);
     mouse.ChoiseMouseCursor(mouse.SHAPE_ARROW);
@@ -27,36 +35,16 @@ int main(){
     while (1)
     {
 
-    mouse.Read();
-    sprintf(buffer," X:%d  Y:%d B1:%d B2:%d",mouse.X, mouse.Y, mouse.leftBtnUp, mouse.rigthBtnUp);
-    buffer[0]=40;
-    Gfx_DrawString(1,80,buffer);
-    sprintf(buffer," mouse change: %d",mouse.btnChanged);
-    Gfx_DrawString(40,40,buffer); 
-    nop_delay(7000);
+        mouse.Read();
 
-      /*   
-            //CheckMouse();
+        key = keyboard.inkey();
+        if (key == keyboard.KEY_CURS_UP) key='U';
 
-            nop_delay(5000);
-            mouseState=GetMouseState();
-            sprintf(buffer,"mouse position X: %d  Y: %d Btn1: %d Btn2: %d",mouseState.mouse_x, mouseState.mouse_y, mouseState.btn1, mouseState.btn2);
-            puts(buffer);
-
-
-    // move the mouse cursor
-  
-        for (int i = 0; i < 200; i++)
-        {
-            MoveCursorMouse(i,i);
-            nop_delay(5000);
-            mouseState=GetMouseState();
-            sprintf(buffer,"mouse position X: %d  Y: %d Btn1: %d Btn2: %d",mouseState.mouse_x, mouseState.mouse_y, mouseState.btn1, mouseState.btn2);
-            puts(buffer);
-
-        }
-    */        
-
+        sprintf(buffer," %d %d %d %d %c",mouse.X, mouse.Y, mouse.leftBtnUp, mouse.rigthBtnUp, key);
+        buffer[0]=40;
+        gui.DrawBoardText(buffer);
+    
+        util.nop_delay(5000);
     }
      return 0;
 
