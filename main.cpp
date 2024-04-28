@@ -4,7 +4,7 @@
 #include "mouse.hpp"
 #include "gui.hpp"
 #include "util.hpp"
-#include "keyboard.hpp"
+#include "console.hpp"
 #include "api.hpp"
 
 
@@ -20,7 +20,7 @@ int main(){
     Mouse mouse;
     Gui gui;
     Util util;
-    Keyboard keyboard;
+    Console keyboard;
 
     int k; 
     char key='0';

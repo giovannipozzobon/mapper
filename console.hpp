@@ -1,10 +1,10 @@
-#ifndef KEYBOARD_HPP
-#define KEYBOARD_HPP
+#ifndef CONSOLE_HPP
+#define CONSOLE_HPP
 
 #include <stdio.h>
 
 
-class Keyboard {
+class Console {
 private:
 
     /* Neo6502 Kernel API control addresses */
@@ -77,4 +77,4 @@ public:
 };
 
 
-#endif //KEYBOARD_HPP
+#endif //CONSOLE_HPP

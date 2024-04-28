@@ -1,7 +1,7 @@
-#include "keyboard.hpp"
+#include "console.hpp"
 
 
-void Keyboard::SetCursorPosition(uint8_t x_pos , uint8_t y_pos)
+void Console::SetCursorPosition(uint8_t x_pos , uint8_t y_pos)
 {
   *API_FUNCTION_ADDR     = API_FN_CURSOR_POS ;
   API_PARAMETERS_ADDR[0] = x_pos             ;
@@ -9,7 +9,7 @@ void Keyboard::SetCursorPosition(uint8_t x_pos , uint8_t y_pos)
   *API_COMMAND_ADDR      = API_GROUP_CONSOLE ;
 }
 
-void Keyboard::write (const unsigned char* buf, unsigned count) {
+void Console::write (const unsigned char* buf, unsigned count) {
  	volatile unsigned char *cmd = (unsigned char *)0xFF00;
  	while (count--) {
  		while(*API_COMMAND_ADDR) {};   
@@ -19,7 +19,7 @@ void Keyboard::write (const unsigned char* buf, unsigned count) {
  	}
 }
 
-void Keyboard::ClearScreen(){
+void Console::ClearScreen(){
     // Clear Screen
     *API_FUNCTION_ADDR     = API_FN_CLEAR_SCREEN ;
     *API_COMMAND_ADDR      = API_GROUP_CONSOLE;
@@ -27,8 +27,8 @@ void Keyboard::ClearScreen(){
 
 } 
 
-char Keyboard::CheckKeyboardArray(){
-    // Check keyboard array
+char Console::CheckKeyboardArray(){
+    // Check Console array
  
     *API_FUNCTION_ADDR     = API_FN_CHECK_STATUS ;
     *API_COMMAND_ADDR      = API_GROUP_CONSOLE ;
@@ -36,8 +36,8 @@ char Keyboard::CheckKeyboardArray(){
 
 } 
 
-// Get character from keyboard
-char Keyboard::inkey() {
+// Get character from Console
+char Console::inkey() {
     while(*API_COMMAND_ADDR) {}  
     *API_FUNCTION_ADDR     = API_FN_READ_CHAR ;
     *API_COMMAND_ADDR      = API_GROUP_CONSOLE ;                 // Group 2, Command 1
@@ -46,7 +46,7 @@ char Keyboard::inkey() {
 }
 
 
-char Keyboard::cgetc() {
+char Console::cgetc() {
   char ch=0;
   while(ch==0) {
     ch=inkey();
@@ -56,7 +56,7 @@ char Keyboard::cgetc() {
 
 
 // Position cursor (API Group 2, Function 7)
-void Keyboard::gotoxy(uint8_t sx, uint8_t sy)
+void Console::gotoxy(uint8_t sx, uint8_t sy)
 {
   API_PARAMETERS_ADDR[0] = sx;
   API_PARAMETERS_ADDR[1] = sy;
@@ -66,7 +66,7 @@ void Keyboard::gotoxy(uint8_t sx, uint8_t sy)
 
 
 // Put a character
-void Keyboard::cputc(char ch) {
+void Console::cputc(char ch) {
 
     while(*API_COMMAND_ADDR) {}  
     API_PARAMETERS_ADDR[0] = ch;
@@ -75,19 +75,19 @@ void Keyboard::cputc(char ch) {
 }
 
 // Put a character at screen coord
-void Keyboard::cputcxy(int sx, int sy, char ch) {
+void Console::cputcxy(int sx, int sy, char ch) {
     gotoxy(sx,sy);
     cputc(ch);
 }
 
 // Clear screen
-void Keyboard::clrscr() {
+void Console::clrscr() {
     cputc(12);
     gotoxy(0,0);
 }
 
-void Keyboard::ClearKeyboardArray(){
-    // Clear keyboard array
+void Console::ClearKeyboardArray(){
+    // Clear Console array
     while(CheckKeyboardArray()==0xff) {
       cgetc();
     }
