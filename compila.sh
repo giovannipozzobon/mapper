@@ -14,7 +14,7 @@ rm -f *.o jroad.neo jroad.map neo6502.lib{,.temp}
 # cleanup
 rm -f *.o mapper.neo mapper.map {,.temp}
 
-/Users/giovanni.pozzobon/Documents/GitHub/llvm-mos-sdk/bin/mos-neo6502-clang++ -Os  main.cpp api.cpp gui.cpp mouse.cpp console.cpp util.cpp -o mapper.neo 
+/Users/giovanni.pozzobon/Documents/GitHub/llvm-mos-sdk/bin/mos-neo6502-clang++ -Os  main.cpp api.cpp gui.cpp mouse.cpp console.cpp util.cpp file.cpp graphic.cpp blitter.cpp -o mapper.neo 
 
 
 # launch emulator
