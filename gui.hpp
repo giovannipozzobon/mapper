@@ -91,11 +91,14 @@ private:
     uint8_t currentTab = 0;
     uint8_t tiles_page = 0;
     uint8_t tile_Selected = 0;
+    uint8_t end_tiles_page = MAX_PAGE_TILE;
 
     // numbers of tiles, sprite loaded from grafics.gfx
     uint8_t nr_tiles = 0;
     uint8_t nr_sprite16 = 0;
     uint8_t nr_sprite32 = 0;
+
+
 
     
     // Functions to Draw screen

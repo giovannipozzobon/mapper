@@ -30,7 +30,7 @@ int main(){
     mouse.ChoiseMouseCursor(mouse.SHAPE_ARROW);
 
     gui.DrawScreen();
-    //gui.ReadGfxValue(); used only to debud to see the correct number of tiles
+    gui.ReadGfxValue(); //used only to debud to see the correct number of tiles
 
     while (1)
     {

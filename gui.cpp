@@ -10,11 +10,11 @@ void Gui::ReadGfxValue(){
     nr_tiles = value_gfx[1];
     nr_sprite16 = value_gfx[2];
     nr_sprite32 = value_gfx[3];
-    /*
+    
     sprintf(strText," %d %d %d ", nr_tiles, nr_sprite16, nr_sprite32);
     strText[0]=40;
     graphic.Gfx_DrawString(30,110,strText);
-    */
+
 }
 
 void  Gui::DrawTabs(){
@@ -164,19 +164,45 @@ void Gui::DrawScreen(){
 };
 
 void Gui::DrawTilesBox(){
-    uint8_t t;
+    uint8_t t,exit =0;
 
+    // lear the space of tiles
+    graphic.SetSolidFlag(1);
+    graphic.SetColor(COLOR_BLACK);
+    graphic.DrawRectangle(START_POS_X,TITLE_TAB_Y2+1,START_POS_X+TILES_W_H,TAB_BOARD_Y1-1);
+    graphic.DrawRectangle(START_POS_X+TILES_W_H+SPACE_TILE_CHAR+CHAR_LEN,TITLE_TAB_Y2+1,START_POS_X+2*TILES_W_H+SPACE_TILE_CHAR+CHAR_LEN,TAB_BOARD_Y1-1);
 
     for (uint8_t i = 0; i < NR_ROWS_TILES; i++)
     {
         // tiles are paged: 26 items for page
         t=(2*tiles_page*NR_ROWS_TILES) + i;
+        if (t>=nr_tiles) { //  >= because we start from 0 and not from 1
+            end_tiles_page = tiles_page;
+            exit=1;
+            break;
+         } // when arrive to the last tile exit
 
-        graphic.DrawImage(START_POS_X, START_POS_Y+ TILES_W_H*i, t); 
-        graphic.DrawImage(START_POS_X+TILES_W_H+SPACE_TILE_CHAR+CHAR_LEN, START_POS_Y+ TILES_W_H*i, t+NR_ROWS_TILES);        
+        graphic.DrawImage(START_POS_X, START_POS_Y+ TILES_W_H*i, t);       
 
     }
 
+    if (exit==1) return;
+
+    for (uint8_t i = 0; i < NR_ROWS_TILES; i++)
+    {
+        // tiles are paged: 26 items for page and first 13 have already drawed
+        t=(2*tiles_page*NR_ROWS_TILES)+ NR_ROWS_TILES + i;
+
+        if (t>=nr_tiles) { //  >= because we start from 0 and not from 1
+            end_tiles_page = tiles_page;
+            break;
+         } // when arrive to the last tile exit
+
+        graphic.DrawImage(START_POS_X+TILES_W_H+SPACE_TILE_CHAR+CHAR_LEN, START_POS_Y+ TILES_W_H*i, t);  
+
+    }
+
+   
 
 }
 
@@ -249,7 +275,7 @@ char tmp;
             tmp='D';
             break;
         case KEY_PAG_INC:
-            if (tiles_page<MAX_PAGE_TILE-1) tiles_page++;
+            if (tiles_page<end_tiles_page) tiles_page++;
             DrawTilesBox();
             tmp='I';
             break;
@@ -258,8 +284,8 @@ char tmp;
     }
     graphic.SetColor(COLOR_WHITE);
     graphic.SetSolidFlag(1);
-    sprintf(strText," KEY %d",tiles_page);
-    strText[0]=5;
+    sprintf(strText," KEY %d %d",tiles_page,end_tiles_page);
+    strText[0]=7;
     graphic.Gfx_DrawString(50,150,strText);    
 }
 
