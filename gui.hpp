@@ -6,6 +6,7 @@
 #include "blitter.hpp"
 
 
+
 // TABS Constant
 #define TAB_WIDTH           48
 #define TAB_COUNT           4
@@ -44,6 +45,19 @@
 //Action Keys
 #define KEY_PAG_DEC         60
 #define KEY_PAG_INC         62
+#define KEY_C_LEFT		    1		// Cursor Left
+#define KEY_C_RIGHT	        4		// Cursor Right
+#define KEY_C_DOWN 	        19		// Cursor Down
+#define KEY_C_UP 		    23		// Cursor Up
+#define KEY_C_SPACE 		32		// Cursor Up
+
+//Editor Grid
+#define GRID_X1             4
+#define GRID_X2             260
+#define GRID_Y1             15
+#define GRID_Y2             223
+#define NR_TILES_HR         16
+#define NR_TILES_VE         13
 
 
 
@@ -67,7 +81,7 @@ private:
 
     };
 
-    // ASCII Key --> Tile There both uppercase lowercase letters
+    // ASCII Key --> Tile There both uppercase lowercase letters 16 are the lowercase chars
     char Key_Tile[NR_ROWS_TILES*2+16][2] = {
         {49,0}, {50,1}, {51,2}, {52,3}, {53,4}, {54,5}, {55,6}, {56,7},
         {57,8}, {48,9},
@@ -84,10 +98,12 @@ private:
     Graphic graphic;
     Blitter blitter;
   
+  
     char strText [sizeof(int)*40+1];
     char strChar[2]={1,65};
     char value_gfx [16];
 
+    // Tiles Box variables
     uint8_t currentTab = 0;
     uint8_t tiles_page = 0;
     uint8_t tile_Selected = 0;
@@ -99,16 +115,24 @@ private:
     uint8_t nr_sprite32 = 0;
 
 
-
+    // Editor Grid variables
+    int grid_cursor_X=0; //Expressed in number of tiles
+    int grid_cursor_Y=0; //Expressed in number of tiles
+    int grid_cursor_X_old=0; //Expressed in number of tiles
+    int grid_cursor_Y_old=0; //Expressed in number of tiles
     
     // Functions to Draw screen
     void DrawTabs();
     void DrawTextTabs();
     void DrawBoard();
     void DrawArea(uint8_t tab);
+
+    // Functions of Tiles Box
     void DrawTilesBox();
     void DrawMapBox();
     void DrawKeyTitle();
+    void DrawCursorSquare();
+    void checkKeyForSelTile(char key);
 
     // Functions to control the program
     void ActionTabFile(char key);

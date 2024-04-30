@@ -2,6 +2,7 @@
 #define FILE_HPP
 
 #include <stdio.h>
+#include <cstdint>
 
 class File {
 

@@ -2,6 +2,7 @@
 #define GRAPHIC_HPP
 
 #include <stdio.h>
+#include <cstdint>
 
 class Graphic {
 

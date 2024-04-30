@@ -230,8 +230,32 @@ void Gui::DrawKeyTitle(){
 
     void Gui::ActionMouse(int x, int y, uint8_t btn1, uint8_t btn2){
 
+}
+
+void Gui::DrawCursorSquare(){
+    
+    graphic.SetSolidFlag(0);
+    graphic.SetColor(COLOR_BLACK); 
+    graphic.DrawRectangle(GRID_X1+grid_cursor_X_old*TILES_W_H,GRID_Y1+grid_cursor_Y_old*TILES_W_H,GRID_X1+grid_cursor_X_old*TILES_W_H+TILES_W_H, GRID_Y1+grid_cursor_Y_old*TILES_W_H+TILES_W_H);
+
+    graphic.SetColor(COLOR_WHITE); 
+    graphic.DrawRectangle(GRID_X1+grid_cursor_X*TILES_W_H,GRID_Y1+grid_cursor_Y*TILES_W_H,GRID_X1+grid_cursor_X*TILES_W_H+TILES_W_H, GRID_Y1+grid_cursor_Y*TILES_W_H+TILES_W_H);
+
+    grid_cursor_X_old = grid_cursor_X;
+    grid_cursor_Y_old = grid_cursor_Y;
+}
+
+void Gui::checkKeyForSelTile(char key){
+    for (uint8_t i = 0; i < NR_ROWS_TILES*2+16; i++)
+    {
+        if (Key_Tile[i][0] == key) {
+            tile_Selected = Key_Tile[i][1];
+            break;
+        }
+
     }
 
+}
     
 void Gui::ActionKey(char key){
 
@@ -279,7 +303,31 @@ char tmp;
             DrawTilesBox();
             tmp='I';
             break;
+        case KEY_C_LEFT:
+            grid_cursor_X--;
+            if (grid_cursor_X < 0) grid_cursor_X=NR_TILES_HR-1;
+            DrawCursorSquare();
+            break;
+        case KEY_C_RIGHT:
+            grid_cursor_X++;
+            if (grid_cursor_X >= NR_TILES_HR) grid_cursor_X=0;
+            DrawCursorSquare();
+            break;
+        case KEY_C_UP:
+            grid_cursor_Y--;
+            if (grid_cursor_Y < 0) grid_cursor_Y=NR_TILES_VE-1;            
+            DrawCursorSquare();
+            break;
+        case KEY_C_DOWN:
+            grid_cursor_Y++;
+            if (grid_cursor_Y >= NR_TILES_VE) grid_cursor_Y=0;            
+            DrawCursorSquare();
+            break;
+        case KEY_C_SPACE:
+            DrawTiles();
+            break;
         default:
+            checkKeyForSelTile(key);
             break;
     }
     graphic.SetColor(COLOR_WHITE);

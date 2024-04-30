@@ -16,7 +16,7 @@ int main(){
     Mouse mouse;
     Gui gui;
     Util util;
-    Console keyboard;
+    Console console;
     File file;
    
 
@@ -37,7 +37,7 @@ int main(){
 
         mouse.Read();
 
-        key = keyboard.inkey();
+        key = console.inkey();
         //if (key == keyboard.KEY_CURS_UP) key='U';
         if (key != 0) gui.ActionKey(key);
 
