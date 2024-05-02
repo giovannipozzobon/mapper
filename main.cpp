@@ -6,7 +6,6 @@
 #include "util.hpp"
 #include "console.hpp"
 #include "file.hpp"
-#include <stdlib.h>
 
 
 char buffer [sizeof(int)*40+1];
@@ -18,17 +17,20 @@ int main(){
     Util util;
     Console console;
     File file;
-   
+
 
     int k; 
     char key='0';
 
+    //load Grafic file
     file.LoadGrafix(nameFileGfx);
     gui.ReadGfxValue();
 
+    //Initialize mouse
     mouse.CursorOnOff(mouse.CURSORON);
     mouse.ChoiseMouseCursor(mouse.SHAPE_ARROW);
 
+    //Initialize gui
     gui.DrawScreen();
     gui.ReadGfxValue(); //used only to debud to see the correct number of tiles
 

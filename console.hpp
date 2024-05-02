@@ -43,7 +43,7 @@ public:
     const uint8_t KEY_CUR_COL_INV 	= 24;		// Cursor Color Inverse
     const uint8_t KEY_DELETE 		= 26;		// Delete Character Right
     const uint8_t KEY_ESCAPE 		= 27;		// Exit
-    const uint8_t KEY_ESCAPE 		= 32;		// Space
+    const uint8_t KEY_SPACE 		= 32;		// Space
 
     // Get character from keyboard
     char inkey();

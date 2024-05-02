@@ -2,7 +2,7 @@
 
 
 void Gui::ReadGfxValue(){
-    
+
     blitter.WaitBlitter();
     blitter.BlitterSimpleCopy(0x90,(char *) 0,0,value_gfx,16);
     blitter.WaitBlitter();
@@ -126,8 +126,22 @@ char * tmpstr;
 };
 */
 
+Gui::Gui()
+{
+      //initialize map
+    map.SetMapInitialAddress(MMAP_ADDRESS);
+    map.SetMapMaxLen(MMAP_MAX_LEN);
+    map.SetRowColNrItems(20,15);
+}
 
-void Gui::DrawScreen(){
+uint8_t Gui::SetRowColNrItems(uint8_t row, uint8_t col){
+
+    return map.SetRowColNrItems(row,col);
+}
+
+
+void Gui::DrawScreen()
+{
 
     DrawTabs();
     DrawTextTabs();
@@ -159,8 +173,6 @@ void Gui::DrawScreen(){
     }
 
     //DrawSelTabs(1, COLOR_WHITE);
-
-  
 };
 
 void Gui::DrawTilesBox(){
@@ -169,8 +181,8 @@ void Gui::DrawTilesBox(){
     // lear the space of tiles
     graphic.SetSolidFlag(1);
     graphic.SetColor(COLOR_BLACK);
-    graphic.DrawRectangle(START_POS_X,TITLE_TAB_Y2+1,START_POS_X+TILES_W_H,TAB_BOARD_Y1-1);
-    graphic.DrawRectangle(START_POS_X+TILES_W_H+SPACE_TILE_CHAR+CHAR_LEN,TITLE_TAB_Y2+1,START_POS_X+2*TILES_W_H+SPACE_TILE_CHAR+CHAR_LEN,TAB_BOARD_Y1-1);
+    graphic.DrawRectangle(START_POS_X-1,START_POS_Y,START_POS_X+TILES_W_H,TAB_BOARD_Y1-1);
+    graphic.DrawRectangle(START_POS_X+TILES_W_H+SPACE_TILE_CHAR+CHAR_LEN-1,START_POS_Y,START_POS_X+2*TILES_W_H+SPACE_TILE_CHAR+CHAR_LEN,TAB_BOARD_Y1-1);
 
     for (uint8_t i = 0; i < NR_ROWS_TILES; i++)
     {
@@ -182,7 +194,7 @@ void Gui::DrawTilesBox(){
             break;
          } // when arrive to the last tile exit
 
-        graphic.DrawImage(START_POS_X, START_POS_Y+ TILES_W_H*i, t);       
+        graphic.DrawImage(START_POS_X, START_POS_Y+ (TILES_W_H+1)*i, t);       
 
     }
 
@@ -197,8 +209,8 @@ void Gui::DrawTilesBox(){
             end_tiles_page = tiles_page;
             break;
          } // when arrive to the last tile exit
-
-        graphic.DrawImage(START_POS_X+TILES_W_H+SPACE_TILE_CHAR+CHAR_LEN, START_POS_Y+ TILES_W_H*i, t);  
+        
+        graphic.DrawImage(START_POS_X+TILES_W_H+SPACE_TILE_CHAR+CHAR_LEN, START_POS_Y+ (TILES_W_H+1)*i, t);  
 
     }
 
@@ -216,9 +228,9 @@ void Gui::DrawKeyTitle(){
     for (uint8_t i = 0; i < NR_ROWS_TILES; i++)
     {
         strChar[1]= Key_Tile[i][0];
-        graphic.Gfx_DrawString(START_POS_X+TILES_W_H+3, 4+START_POS_Y+TILES_W_H*i,strChar);
+        graphic.Gfx_DrawString(START_POS_X+TILES_W_H+3, 4+START_POS_Y+(TILES_W_H+1)*i,strChar);
         strChar[1]= Key_Tile[i+NR_ROWS_TILES][0];
-        graphic.Gfx_DrawString(START_POS_X+TILES_W_H*2+SPACE_TILE_CHAR*2+CHAR_LEN,4+START_POS_Y+ TILES_W_H*i,strChar);
+        graphic.Gfx_DrawString(START_POS_X+TILES_W_H*2+SPACE_TILE_CHAR*2+CHAR_LEN,4+START_POS_Y+ (TILES_W_H+1)*i,strChar);
     }
 
     // Write the page symbols
@@ -245,11 +257,67 @@ void Gui::DrawCursorSquare(){
     grid_cursor_Y_old = grid_cursor_Y;
 }
 
+void Gui::DrawTileInGrid(){
+
+    graphic.DrawImage(GRID_X1+grid_cursor_X*TILES_W_H, GRID_Y1+grid_cursor_Y*TILES_W_H, tile_Selected);  
+
+}
+
 void Gui::checkKeyForSelTile(char key){
+    uint8_t pos;
     for (uint8_t i = 0; i < NR_ROWS_TILES*2+16; i++)
     {
+
         if (Key_Tile[i][0] == key) {
-            tile_Selected = Key_Tile[i][1];
+            tile_Selected = Key_Tile[i][1]+(2*tiles_page*NR_ROWS_TILES);
+
+            //Delete a rectangle around the OLD tiles selected
+            graphic.SetSolidFlag(0);
+            graphic.SetColor(COLOR_BLACK); 
+            graphic.DrawRectangle(old_red_square_tiles_X1,old_red_square_tiles_Y1,old_red_square_tiles_X2,old_red_square_tiles_Y2); 
+
+
+
+            if ((i<NR_ROWS_TILES) || (key== 97) || (key==98) || (key==99)){
+                if (i<NR_ROWS_TILES) {pos=i;} else {pos=i-16;}  
+                /*
+                graphic.SetSolidFlag(1);
+                graphic.SetColor(COLOR_WHITE);
+                sprintf(strText," I %d %d",pos, key);
+                strText[0]=10;
+                graphic.Gfx_DrawString(50,180,strText); */
+
+                // here we are on then first column
+                //recalculate the new position and update the coordinates
+                old_red_square_tiles_X1= START_POS_X-1 ;
+                old_red_square_tiles_X2= START_POS_X+TILES_W_H;
+                old_red_square_tiles_Y1= START_POS_Y-1+ (TILES_W_H+1)*pos;
+                old_red_square_tiles_Y2= START_POS_Y+ TILES_W_H +(TILES_W_H+1)*pos;               
+               
+            } else {
+
+                if (i<2*NR_ROWS_TILES) {pos=i-13;} else {pos=i-29;}
+                /*
+                graphic.SetSolidFlag(1);               
+                graphic.SetColor(COLOR_WHITE);
+                 sprintf(strText," Q %d %d",pos, key);
+                strText[0]=10;
+                graphic.Gfx_DrawString(50,180,strText);  */
+
+               // here we are on then first column
+                //recalculate the new position and update the coordinates
+                old_red_square_tiles_X1= START_POS_X-1+TILES_W_H+SPACE_TILE_CHAR+CHAR_LEN;
+                old_red_square_tiles_X2= START_POS_X+TILES_W_H+SPACE_TILE_CHAR+CHAR_LEN+TILES_W_H;
+                old_red_square_tiles_Y1= START_POS_Y+ (TILES_W_H+1)*pos;
+                old_red_square_tiles_Y2= START_POS_Y+ (TILES_W_H+1)*pos+TILES_W_H;  
+
+            }
+            
+            //Draw a rectangle around the tiles selected
+            graphic.SetSolidFlag(0);
+            graphic.SetColor(COLOR_RED);     
+            graphic.DrawRectangle(old_red_square_tiles_X1,old_red_square_tiles_Y1,old_red_square_tiles_X2,old_red_square_tiles_Y2);    
+
             break;
         }
 
@@ -324,7 +392,7 @@ char tmp;
             DrawCursorSquare();
             break;
         case KEY_C_SPACE:
-            DrawTiles();
+            DrawTileInGrid();
             break;
         default:
             checkKeyForSelTile(key);

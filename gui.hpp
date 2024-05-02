@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include "graphic.hpp"
 #include "blitter.hpp"
+#include "map.hpp"
 
 
 
@@ -29,11 +30,12 @@
 #define COLOR_DARK_GRAY     9
 #define COLOR_GREEN         2
 #define COLOR_BLUE          4
+#define COLOR_RED           1
 #define COLOR_LIGTH_GRAY    0xF
 
 //Tiles Box Values
 #define START_POS_X         265
-#define START_POS_Y         17
+#define START_POS_Y         4//17
 #define NR_COLS_TILES       2
 #define NR_ROWS_TILES       13
 #define TILES_W_H           16
@@ -59,7 +61,9 @@
 #define NR_TILES_HR         16
 #define NR_TILES_VE         13
 
-
+//Memory address for tiles map 
+#define MMAP_ADDRESS  0xD000 // initial Address of grid's memory 
+#define MMAP_MAX_LEN  0x2000 // must be multiply of 20*15 tiles. 8K
 
 class Gui {
 private:
@@ -97,17 +101,23 @@ private:
 
     Graphic graphic;
     Blitter blitter;
-  
+    Map map;
+   
   
     char strText [sizeof(int)*40+1];
     char strChar[2]={1,65};
     char value_gfx [16];
+
 
     // Tiles Box variables
     uint8_t currentTab = 0;
     uint8_t tiles_page = 0;
     uint8_t tile_Selected = 0;
     uint8_t end_tiles_page = MAX_PAGE_TILE;
+    int old_red_square_tiles_X1;
+    int old_red_square_tiles_X2;
+    int old_red_square_tiles_Y1;
+    int old_red_square_tiles_Y2;
 
     // numbers of tiles, sprite loaded from grafics.gfx
     uint8_t nr_tiles = 0;
@@ -133,6 +143,7 @@ private:
     void DrawKeyTitle();
     void DrawCursorSquare();
     void checkKeyForSelTile(char key);
+    void DrawTileInGrid();
 
     // Functions to control the program
     void ActionTabFile(char key);
@@ -142,6 +153,10 @@ private:
 
 
 public:
+
+    Gui();
+
+    uint8_t SetRowColNrItems(uint8_t row, uint8_t col);
 
     void DrawScreen();
 

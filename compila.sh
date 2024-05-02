@@ -1,7 +1,4 @@
 
-# cleanup
-rm -f *.o jroad.neo jroad.map neo6502.lib{,.temp}
-
 #compile
 #/Users/giovanni.pozzobon/Documents/GitHub/llvm-mos-sdk/bin/mos-neo6502-clang -Os -v -fverbose-asm -mcpu=mosw65c02 -D__NEO6502__ -mlto-zp=224 \
 #-I /Users/giovanni.pozzobon/Documents/GitHub/llvm-mos-sdk/mos-platform/neo6502/asminc \
@@ -14,7 +11,7 @@ rm -f *.o jroad.neo jroad.map neo6502.lib{,.temp}
 # cleanup
 rm -f *.o mapper.neo mapper.map {,.temp}
 
-/Users/giovanni.pozzobon/Documents/GitHub/llvm-mos-sdk/bin/mos-neo6502-clang++ -Os  main.cpp gui.cpp mouse.cpp console.cpp util.cpp file.cpp graphic.cpp blitter.cpp -o mapper.neo 
+/Users/giovanni.pozzobon/Documents/GitHub/llvm-mos-sdk/bin/mos-neo6502-clang++ -Os  main.cpp gui.cpp mouse.cpp console.cpp util.cpp file.cpp graphic.cpp blitter.cpp map.cpp -o mapper.neo 
 
 
 # launch emulator
