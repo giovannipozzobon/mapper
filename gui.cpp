@@ -62,14 +62,35 @@ void Gui::DrawBoardText(char * str){
 
 }
 
+void Gui::DrawFilesBox(){
+
+	console.gotoxy(16, 10);
+	console.cputc(0x81);
+	sprintf(strText, "FILE TILES:");
+	puts(strText);
+
+	console.gotoxy(5, 20);
+	console.cputc(143);
+	puts("TILES:");
+
+}
+
 void Gui::DrawArea(uint8_t tab){
 
     switch (tab)
     {
     case TAB_FILES:
         graphic.SetSolidFlag(1);
+        //Clear All
+        graphic.SetColor(COLOR_BLACK);
+        graphic.DrawRectangle(START_POS_X,0,320,240);
+
+        //Draw the Files space
         graphic.SetColor(COLOR_DARK_GRAY);
         graphic.DrawRectangle(0,TITLE_TAB_Y2+1,320,TAB_BOARD_Y1-1);
+
+        // Prepare for imput
+        DrawFilesBox();
         graphic.SetColor(COLOR_WHITE);
         sprintf(strText," TAB %d",tab);
         strText[0]=5;
@@ -78,6 +99,12 @@ void Gui::DrawArea(uint8_t tab){
 
     case TAB_TILES:
         graphic.SetSolidFlag(1);
+        //Clear All
+        graphic.SetColor(COLOR_BLACK);
+        graphic.DrawRectangle(START_POS_X,0,320,240);
+
+        //Draw the Files Tiles
+
         graphic.SetColor(COLOR_DARK_GRAY);
         graphic.DrawRectangle(0,TITLE_TAB_Y2+1,320,TAB_BOARD_Y1-1);
         graphic.SetColor(COLOR_WHITE);
@@ -89,8 +116,8 @@ void Gui::DrawArea(uint8_t tab){
     case TAB_EDITOR:
         graphic.SetSolidFlag(1);
         graphic.SetColor(COLOR_BLACK);
-        graphic.DrawRectangle(0,TITLE_TAB_Y2+1,START_POS_X-1,TAB_BOARD_Y1-1);
-        graphic.DrawRectangle(START_POS_X,TAB_BOARD_Y1,320,TAB_BOARD_Y2);
+        graphic.DrawRectangle(0,TITLE_TAB_Y2+1,TAB_BOARD_X2,TAB_BOARD_Y1-1);
+        graphic.DrawRectangle(START_POS_X,0,320,TAB_BOARD_Y2);
         graphic.SetColor(COLOR_WHITE);
         sprintf(strText," TAB %d",tab);
         strText[0]=5;
@@ -99,6 +126,12 @@ void Gui::DrawArea(uint8_t tab){
 
     case TAB_CONFIG:
         graphic.SetSolidFlag(1);
+        
+        //Clear All
+        graphic.SetColor(COLOR_BLACK);
+        graphic.DrawRectangle(START_POS_X,0,320,240);
+
+        //Draw the Files Config
         graphic.SetColor(COLOR_DARK_GRAY);
         graphic.DrawRectangle(0,TITLE_TAB_Y2+1,320,TAB_BOARD_Y1-1);
         graphic.SetColor(COLOR_WHITE);
@@ -132,6 +165,7 @@ Gui::Gui()
     map.SetMapInitialAddress(MMAP_ADDRESS);
     map.SetMapMaxLen(MMAP_MAX_LEN);
     map.SetRowColNrItems(20,15);
+    map.SetCursor(0,0,0,0,0xff); //no tiles present in grid where is the cursor
 }
 
 uint8_t Gui::SetRowColNrItems(uint8_t row, uint8_t col){
@@ -142,14 +176,13 @@ uint8_t Gui::SetRowColNrItems(uint8_t row, uint8_t col){
 
 void Gui::DrawScreen()
 {
-
     DrawTabs();
     DrawTextTabs();
     DrawBoard();
 
 
-    // If the firt time select the first tab
-    if (currentTab==0) currentTab =2;
+    // If the firt time select the first tab only for Debug
+    //if (currentTab==0) currentTab =2;
 
     switch (currentTab)
     {
@@ -175,14 +208,19 @@ void Gui::DrawScreen()
     //DrawSelTabs(1, COLOR_WHITE);
 };
 
-void Gui::DrawTilesBox(){
-    uint8_t t,exit =0;
+void Gui::ClearSpaceTiles(){
 
-    // lear the space of tiles
+    // Clear the space of tiles
     graphic.SetSolidFlag(1);
     graphic.SetColor(COLOR_BLACK);
     graphic.DrawRectangle(START_POS_X-1,START_POS_Y,START_POS_X+TILES_W_H,TAB_BOARD_Y1-1);
     graphic.DrawRectangle(START_POS_X+TILES_W_H+SPACE_TILE_CHAR+CHAR_LEN-1,START_POS_Y,START_POS_X+2*TILES_W_H+SPACE_TILE_CHAR+CHAR_LEN,TAB_BOARD_Y1-1);
+}
+
+void Gui::DrawTilesBox(){
+    uint8_t t,exit =0;
+
+    ClearSpaceTiles();
 
     for (uint8_t i = 0; i < NR_ROWS_TILES; i++)
     {
@@ -245,21 +283,37 @@ void Gui::DrawKeyTitle(){
 }
 
 void Gui::DrawCursorSquare(){
-    
-    graphic.SetSolidFlag(0);
-    graphic.SetColor(COLOR_BLACK); 
-    graphic.DrawRectangle(GRID_X1+grid_cursor_X_old*TILES_W_H,GRID_Y1+grid_cursor_Y_old*TILES_W_H,GRID_X1+grid_cursor_X_old*TILES_W_H+TILES_W_H, GRID_Y1+grid_cursor_Y_old*TILES_W_H+TILES_W_H);
 
+     //Update information for new position of cursor 
+    map.UpdateCursorFromGrid(grid_cursor_X_old, grid_cursor_Y_old,GRID_X1+grid_cursor_X_old*TILES_W_H, GRID_Y1+grid_cursor_Y_old*TILES_W_H);
+
+    // if ImagaID is -1 then draw a black box else draw the image saved
+    if (map.ReadCursorImageID() == 0xff) {
+        graphic.SetSolidFlag(0);
+        graphic.SetColor(COLOR_BLACK); 
+        graphic.DrawRectangle(GRID_X1+grid_cursor_X_old*TILES_W_H,GRID_Y1+grid_cursor_Y_old*TILES_W_H,GRID_X1+grid_cursor_X_old*TILES_W_H+TILES_W_H-1, GRID_Y1+grid_cursor_Y_old*TILES_W_H+TILES_W_H-1);
+    } else {
+        graphic.SetSolidFlag(1);
+        graphic.DrawImage(map.ReadCursorMapX(), map.ReadCursorMapY(), map.ReadCursorImageID());
+    }
+
+    graphic.SetSolidFlag(0);
     graphic.SetColor(COLOR_WHITE); 
-    graphic.DrawRectangle(GRID_X1+grid_cursor_X*TILES_W_H,GRID_Y1+grid_cursor_Y*TILES_W_H,GRID_X1+grid_cursor_X*TILES_W_H+TILES_W_H, GRID_Y1+grid_cursor_Y*TILES_W_H+TILES_W_H);
+    graphic.DrawRectangle(GRID_X1+grid_cursor_X*TILES_W_H,GRID_Y1+grid_cursor_Y*TILES_W_H,GRID_X1+grid_cursor_X*TILES_W_H+TILES_W_H-1, GRID_Y1+grid_cursor_Y*TILES_W_H+TILES_W_H-1);
 
     grid_cursor_X_old = grid_cursor_X;
     grid_cursor_Y_old = grid_cursor_Y;
+
+
 }
 
 void Gui::DrawTileInGrid(){
 
-    graphic.DrawImage(GRID_X1+grid_cursor_X*TILES_W_H, GRID_Y1+grid_cursor_Y*TILES_W_H, tile_Selected);  
+    graphic.DrawImage(GRID_X1+grid_cursor_X*TILES_W_H, GRID_Y1+grid_cursor_Y*TILES_W_H, tile_Selected); 
+
+    // Set information for the cursor grid and save in grid
+   map.SetCursor(grid_cursor_X, grid_cursor_Y, GRID_X1+grid_cursor_X*TILES_W_H, GRID_Y1+grid_cursor_Y*TILES_W_H, tile_Selected);
+   map.SaveCursorToGrid();
 
 }
 
@@ -328,7 +382,43 @@ void Gui::checkKeyForSelTile(char key){
 void Gui::ActionKey(char key){
 
     // TODO: Verify is the keys are the TAB Key so change the TAB
+    switch (key)
+    {
+    case KEY_C_Q1: 
+    case KEY_C_Q2:
+        if (currentTab != TAB_FILES){
+            currentTab = TAB_FILES;
+            DrawScreen();
+        }
+        break;
 
+     case KEY_C_W1:
+     case KEY_C_W2:
+        if (currentTab != TAB_TILES){
+            currentTab = TAB_TILES;
+            DrawScreen();
+        }
+        break;
+
+    case KEY_C_R1:
+    case KEY_C_R2:
+        if (currentTab != TAB_EDITOR){
+            currentTab = TAB_EDITOR;
+            DrawScreen();
+        }
+        break;
+        
+    case KEY_C_T1:
+    case KEY_C_T2:
+        if (currentTab != TAB_CONFIG){
+            currentTab = TAB_CONFIG;
+            DrawScreen();
+        }
+        break;
+                        
+    default:
+        break;
+    }
 
     switch (currentTab){
         case TAB_FILES:
@@ -347,11 +437,42 @@ void Gui::ActionKey(char key){
             break;
     }
 
-
 }
 
 void Gui::ActionTabFile(char key){
+unsigned char namefile[40];
 
+    switch (key){
+        case KEY_C_L1:
+        case KEY_C_L2:
+            console.clrscr();
+            file.DisplayDirectory();
+            console.CheckKeyboardArray();
+            console.gotoxy(10,10);
+            puts("SCRIVI");
+            console.ReadLine((int) namefile);
+            puts((char *) namefile);
+            //file.LoadGrafix(namefile);
+            break;
+        case KEY_C_S1:
+        case KEY_C_S2:
+            break;
+        case KEY_C_N1:
+        case KEY_C_N2:
+            break;
+        case KEY_C_G1:
+        case KEY_C_G2:
+            break;
+        case KEY_C_A1:
+        case KEY_C_A2:
+            break;
+        case KEY_C_DOWN:
+            break;
+        case KEY_C_SPACE:
+            break;
+        default:
+            break;
+    }
 }
 
 void Gui::ActionTabTile(char key){
@@ -398,6 +519,7 @@ char tmp;
             checkKeyForSelTile(key);
             break;
     }
+
     graphic.SetColor(COLOR_WHITE);
     graphic.SetSolidFlag(1);
     sprintf(strText," KEY %d %d",tiles_page,end_tiles_page);
@@ -408,3 +530,9 @@ char tmp;
 void Gui::ActionTabConfig(char key){
 
 }
+
+
+uint8_t Gui::WhichTABVisible(){
+    return currentTab;
+ }
+

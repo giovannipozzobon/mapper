@@ -45,6 +45,19 @@ char Console::inkey() {
     return(API_PARAMETERS_ADDR[0]);            // Return parameter
 }
 
+// Get character from Console
+void Console::ReadLine(int line_read) {
+
+  	API_PARAMETERS_ADDR[0] = line_read & 0xFF;        
+  	API_PARAMETERS_ADDR[1] = line_read  >> 8;
+
+    while(*API_COMMAND_ADDR) {}  
+    *API_FUNCTION_ADDR     = API_FN_READ_LINE;
+    *API_COMMAND_ADDR      = API_GROUP_CONSOLE;                 
+    while(*API_COMMAND_ADDR) {}
+
+}
+
 
 char Console::cgetc() {
   char ch=0;
@@ -88,10 +101,21 @@ void Console::clrscr() {
 
 void Console::ClearKeyboardArray(){
     // Clear Console array
-    while(CheckKeyboardArray()==0xff) {
+  while(CheckKeyboardArray()==0xff) {
       cgetc();
-    }
+  }
 
 } 
+
+uint8_t Console::KeyModifierStatus(uint8_t  chr){
+  API_PARAMETERS_ADDR[0] = chr;
+  while(*API_COMMAND_ADDR) {}  
+  *API_FUNCTION_ADDR  = API_FN_KEY_STATUS;
+  *API_COMMAND_ADDR   = API_GROUP_SYSTEM;   
+  while(*API_COMMAND_ADDR) {}
+  return(API_PARAMETERS_ADDR[0]);            // Return parameter
+
+}
+
  
 

@@ -9,7 +9,7 @@
 
 
 char buffer [sizeof(int)*40+1];
-const unsigned char nameFileGfx[] = {12, 'g', 'r', 'a', 'p', 'h', 'i', 'c', 's', '.', 'g', 'f', 'x'};
+unsigned char nameFileGfx[] = {12, 'g', 'r', 'a', 'p', 'h', 'i', 'c', 's', '.', 'g', 'f', 'x'};
 
 int main(){
     Mouse mouse;
@@ -21,6 +21,7 @@ int main(){
 
     int k; 
     char key='0';
+    uint8_t current_tab;
 
     //load Grafic file
     file.LoadGrafix(nameFileGfx);
@@ -43,10 +44,11 @@ int main(){
         //if (key == keyboard.KEY_CURS_UP) key='U';
         if (key != 0) gui.ActionKey(key);
 
+        //kstatus =console.KeyModifierStatus(key);
         //sprintf(buffer," %d %d %d %d %c",mouse.X, mouse.Y, mouse.leftBtnUp, mouse.rigthBtnUp, key);
-        //sprintf(buffer," %i ", array);
-        //buffer[0]=40;
-        //gui.DrawBoardText(buffer);
+        sprintf(buffer," %i", key);
+        buffer[0]=40;
+        gui.DrawBoardText(buffer);
     
         util.nop_delay(5000);
     }

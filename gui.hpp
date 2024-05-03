@@ -5,11 +5,14 @@
 #include "graphic.hpp"
 #include "blitter.hpp"
 #include "map.hpp"
+#include "file.hpp"
+#include "console.hpp"
+#include "util.hpp"
 
 
 
 // TABS Constant
-#define TAB_WIDTH           48
+#define TAB_WIDTH           60
 #define TAB_COUNT           4
 #define TAB_BOARD_X1        0
 #define TAB_BOARD_X2        START_POS_X-1
@@ -43,8 +46,17 @@
 #define CHAR_LEN            8
 #define MAX_PAGE_TILE       5
 
+//Action Keys TAB Switch
+#define KEY_C_Q1             81
+#define KEY_C_Q2             113
+#define KEY_C_W1             87
+#define KEY_C_W2             119
+#define KEY_C_R1             82
+#define KEY_C_R2             114
+#define KEY_C_T1             84
+#define KEY_C_T2             116
 
-//Action Keys
+//Action Keys Editor
 #define KEY_PAG_DEC         60
 #define KEY_PAG_INC         62
 #define KEY_C_LEFT		    1		// Cursor Left
@@ -52,6 +64,18 @@
 #define KEY_C_DOWN 	        19		// Cursor Down
 #define KEY_C_UP 		    23		// Cursor Up
 #define KEY_C_SPACE 		32		// Cursor Up
+
+//Action Keys File
+#define KEY_C_L1		    76		
+#define KEY_C_L2	        108		
+#define KEY_C_S1 	        83		
+#define KEY_C_S2 		    115		
+#define KEY_C_N1     		79		
+#define KEY_C_N2     		110		
+#define KEY_C_G1     		71		
+#define KEY_C_G2     		103	
+#define KEY_C_A1     		65		
+#define KEY_C_A2     		97	
 
 //Editor Grid
 #define GRID_X1             4
@@ -68,11 +92,11 @@
 class Gui {
 private:
 
-    char tabname[TAB_COUNT][7] = {
-        {6, 'F', 'i', 'l', 'e', ' ', ' '},
-        {6, 'T', 'i', 'l', 'e', 's', ' '},
-        {6, 'E', 'd', 'i', 't', 'o', 'r'},
-        {6, 'C', 'o', 'n', 'f', 'i', 'g'},
+    char tabname[TAB_COUNT][10] = {
+        {9, 'F', 'i', 'l', 'e', '(', 'Q', ')',' ',' '},
+        {9, 'T', 'i', 'l', 'e', 's','(', 'W', ')',' '},
+        {9, 'E', 'd', 'i', 't', 'o', 'r', '(', 'R', ')'},
+        {9, 'C', 'o', 'n', 'f', 'i', 'g', '(', 'T', ')'},
 
     };
 
@@ -102,6 +126,9 @@ private:
     Graphic graphic;
     Blitter blitter;
     Map map;
+    File file;
+    Console console;
+    Util util;
    
   
     char strText [sizeof(int)*40+1];
@@ -112,7 +139,7 @@ private:
     // Tiles Box variables
     uint8_t currentTab = 0;
     uint8_t tiles_page = 0;
-    uint8_t tile_Selected = 0;
+    uint8_t tile_Selected = 0xff;
     uint8_t end_tiles_page = MAX_PAGE_TILE;
     int old_red_square_tiles_X1;
     int old_red_square_tiles_X2;
@@ -144,6 +171,11 @@ private:
     void DrawCursorSquare();
     void checkKeyForSelTile(char key);
     void DrawTileInGrid();
+    void ClearSpaceTiles();
+
+    // Functions of Files Box
+    void DrawFilesBox();
+    void InputFileName();
 
     // Functions to control the program
     void ActionTabFile(char key);
@@ -167,6 +199,12 @@ public:
     void ActionKey(char key);
 
     void ReadGfxValue();
+
+    uint8_t SaveMap();
+
+    uint8_t LoadMap();
+
+    uint8_t WhichTABVisible();
     
 };
 

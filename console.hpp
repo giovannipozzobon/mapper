@@ -15,13 +15,19 @@ private:
     volatile uint8_t* API_PARAMETERS_ADDR = ( uint8_t*)0xFF04 ; // function parameters base address (8 bytes)
 
     // Console functions (Group 2)
-    uint8_t API_GROUP_CONSOLE       = (uint8_t )0x02 ; // API function group Concole
+    uint8_t API_GROUP_CONSOLE       = (uint8_t )0x02 ; // API function group Console
     uint8_t API_FN_WRITE_CHAR       = (uint8_t )0x00 ; // API function Write Char
     uint8_t API_FN_READ_CHAR        = (uint8_t )0x01 ; // API function Read Char
     uint8_t API_FN_CHECK_STATUS     = (uint8_t )0x02 ; // API function Check Status
+    uint8_t API_FN_READ_LINE        = (uint8_t )0x03 ; // API function Read Line    
     uint8_t API_FN_WRITE_CHAR_CURS  = (uint8_t )0x06 ; // API function Write Char Curs
     uint8_t API_FN_CURSOR_POS       = (uint8_t )0x07 ; // API function Cursor Pos
     uint8_t API_FN_CLEAR_SCREEN     = (uint8_t )0x0C ; // API function Clear Screen
+
+    // System functions (Group 1)
+    uint8_t API_GROUP_SYSTEM        = (uint8_t )0x01 ; // API function group System
+    uint8_t API_FN_KEY_STATUS       = (uint8_t )0x02 ; // API function Key Status
+
 
 public:
 
@@ -44,6 +50,10 @@ public:
     const uint8_t KEY_DELETE 		= 26;		// Delete Character Right
     const uint8_t KEY_ESCAPE 		= 27;		// Exit
     const uint8_t KEY_SPACE 		= 32;		// Space
+
+    const uint8_t KEY_CTRL 		    = 32;		// Control
+    const uint8_t KEY_SHIFT 		= 32;		// Shift
+    const uint8_t KEY_ALT 		    =  32;		// Alt
 
     // Get character from keyboard
     char inkey();
@@ -73,7 +83,9 @@ public:
 
     void ClearKeyboardArray();
 
+    uint8_t KeyModifierStatus(uint8_t chr);
 
+    void ReadLine(int line_read);
 
 };
 

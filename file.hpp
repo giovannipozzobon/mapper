@@ -27,18 +27,18 @@ public:
 
     void DisplayDirectory();
 
-    void OpenFile(uint8_t channel, const unsigned char * fileName, uint8_t mode);
+    void OpenFile(uint8_t channel, unsigned char * fileName, uint8_t mode);
 
     void CloseFile(uint8_t channel);
 
     uint8_t WriteFile(uint8_t channel, int memory, int nrbyte);
 
-    uint8_t LoadFile( int memory, const unsigned char * fileName);
+    uint8_t LoadFile( int memory, unsigned char * fileName);
 
-    uint8_t SaveFile( int memory, int nrbyte , const unsigned char * fileName);
+    uint8_t SaveFile( int memory, int nrbyte , unsigned char * fileName);
 
 
-    uint8_t LoadGrafix(const unsigned char * file); 
+    uint8_t LoadGrafix(unsigned char * file); 
 
 };
 

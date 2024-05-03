@@ -1,0 +1,7 @@
+implement TAB per Load Save and input Rows and Cols
+implement the Save Files
+implement the Load Files
+implement the Fill. Fill the map with the tile tile_Selected
+implement the Erase. Erase the Map.
+implement the Map larger the Editor. Scroll Up, Down, Rigth, and Left. 
+implement example in Basic ane in C
