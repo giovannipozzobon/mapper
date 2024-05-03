@@ -105,3 +105,7 @@ int Map::GetCols(){return NrCol;}
 int Map::GetItemFromGrid(int index){
     return grid_addr_ram[index];
 }
+
+void Map::ResetMap(){
+    FillMem(0xff);
+}

@@ -575,6 +575,14 @@ char k;
 void Gui::ResetMap(){
 uint8_t k, rows, cols;
  
+    map.ResetMap();
+
+}
+
+void Gui::SetNewMap(){
+uint8_t k, rows, cols;
+ 
+
     console.clrscr();
     console.gotoxy(10,10);
     puts("INSERT NR ROWS OF MAP");
@@ -586,7 +594,6 @@ uint8_t k, rows, cols;
     puts("INSERT NR COLS OF MAP");
     console.CheckKeyboardArray();
     k=console.cgetc();
-
 
 }
 
