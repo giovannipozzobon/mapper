@@ -1,0 +1,6 @@
+10 cls
+20 gload "graphics.gfx"
+30 mem = alloc($500)
+40 load "map0.map",mem
+50 tilemap mem,0,0
+60 tiledraw 0,0 to 256,208

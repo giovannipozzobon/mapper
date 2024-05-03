@@ -65,17 +65,18 @@
 #define KEY_C_UP 		    23		// Cursor Up
 #define KEY_C_SPACE 		32		// Cursor Up
 
-//Action Keys File
+//Action Keys File & Config
 #define KEY_C_L1		    76		
 #define KEY_C_L2	        108		
 #define KEY_C_S1 	        83		
 #define KEY_C_S2 		    115		
-#define KEY_C_N1     		79		
+#define KEY_C_N1     		78		
 #define KEY_C_N2     		110		
 #define KEY_C_G1     		71		
 #define KEY_C_G2     		103	
 #define KEY_C_A1     		65		
 #define KEY_C_A2     		97	
+
 
 //Editor Grid
 #define GRID_X1             4
@@ -172,10 +173,14 @@ private:
     void checkKeyForSelTile(char key);
     void DrawTileInGrid();
     void ClearSpaceTiles();
+    void LoadMapFromGrid();
 
     // Functions of Files Box
     void DrawFilesBox();
     void InputFileName();
+
+    //Functions Config
+    void ResetMap();
 
     // Functions to control the program
     void ActionTabFile(char key);
@@ -199,10 +204,6 @@ public:
     void ActionKey(char key);
 
     void ReadGfxValue();
-
-    uint8_t SaveMap();
-
-    uint8_t LoadMap();
 
     uint8_t WhichTABVisible();
     

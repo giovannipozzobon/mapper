@@ -24,8 +24,8 @@ int main(){
     uint8_t current_tab;
 
     //load Grafic file
-    file.LoadGrafix(nameFileGfx);
-    gui.ReadGfxValue();
+    //file.LoadGrafix(nameFileGfx);
+    //gui.ReadGfxValue();
 
     //Initialize mouse
     mouse.CursorOnOff(mouse.CURSORON);
@@ -33,7 +33,7 @@ int main(){
 
     //Initialize gui
     gui.DrawScreen();
-    gui.ReadGfxValue(); //used only to debud to see the correct number of tiles
+    //gui.ReadGfxValue(); //used only to debud to see the correct number of tiles
 
     while (1)
     {

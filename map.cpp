@@ -11,17 +11,6 @@ uint8_t Map::FillMem(uint8_t value){
     return OK;
 }
 
-uint8_t Map::LoadMap(unsigned char * namefile){
-    //code
-    return 0;
-}
-
-
-uint8_t Map::SaveMap(unsigned char * namefile){
-    //code
-    return 0;
-}
-
 
 void Map::AddItem(uint8_t imageID, uint8_t pos_x, uint8_t pos_y){
 
@@ -34,7 +23,10 @@ void Map::DelItem(uint8_t imageID, uint8_t pos_x, uint8_t pos_y){
 
 
 void Map::SetMapInitialAddress(int address){
-    grid_addr_ram = (char *) address;
+    // the first 3 bytes are header of tilemap 
+    
+    grid_addr_init = (char *) address;
+    grid_addr_ram = grid_addr_init+3;
 }
 
 void Map::SetMapMaxLen(int len){
@@ -51,6 +43,9 @@ uint8_t Map::SetRowColNrItems(uint8_t row, uint8_t col){
         return ERROR; 
     else{ 
         //Fill the memory with map default value (empty)
+        grid_addr_init[0] = 1;
+        grid_addr_init[1] = row;
+        grid_addr_init[2] = col;
         FillMem(0xff);
         return OK;
     }
@@ -83,4 +78,30 @@ void Map::UpdateCursorFromGrid(uint8_t grid_x, uint8_t grid_y, int map_x, int ma
 
 void Map::SaveCursorToGrid(){
     grid_addr_ram[cursor.cursor_grid_x+cursor.cursor_grid_y*NrRow] = cursor.imageID;
+}
+
+int Map::GetMapAddress(){
+    return (int) grid_addr_init;
+}
+
+uint8_t Map::LoadMap(unsigned char * namefile){
+
+    file.LoadFile((int) grid_addr_init, namefile);
+    return OK;
+
+}
+
+uint8_t Map::SaveMap(unsigned char * namefile){
+
+    file.SaveFile((int) grid_addr_init, nr_item+3, namefile);
+    return OK;
+
+}
+
+int Map::GetItems(){ return nr_item;}
+int Map::GetRows(){return NrRow;}
+int Map::GetCols(){return NrCol;}
+
+int Map::GetItemFromGrid(int index){
+    return grid_addr_ram[index];
 }

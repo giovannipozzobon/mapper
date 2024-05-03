@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <cstdint>
+#include "file.hpp"
 
 #define ERROR   -1
 #define OK      0
@@ -22,6 +23,9 @@ private:
         
     } cursor_grid;
 
+    File file;
+
+    char * grid_addr_init;
     char * grid_addr_ram;
     int max_len_map;
     char * max_addr_ram;
@@ -48,10 +52,15 @@ public:
     void SetCursor(uint8_t cursor_grid_x, uint8_t cursor_grid_y, int cursor_map_x, int cursor_map_y, uint8_t imageID);
 
     uint8_t ReadCursorImageID();
-    int     ReadCursorMapX();
-    int     ReadCursorMapY();
-    void    UpdateCursorFromGrid(uint8_t grid_x, uint8_t grid_y, int map_x, int map_y);
-    void    SaveCursorToGrid();
+    int ReadCursorMapX();
+    int ReadCursorMapY();
+    void UpdateCursorFromGrid(uint8_t grid_x, uint8_t grid_y, int map_x, int map_y);
+    void SaveCursorToGrid();
+    int GetMapAddress();
+    int GetItems();
+    int GetRows();
+    int GetCols();
+    int GetItemFromGrid(int index);
 
 };
 

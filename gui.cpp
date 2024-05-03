@@ -195,7 +195,8 @@ void Gui::DrawScreen()
     case TAB_EDITOR:
         DrawArea(TAB_EDITOR);
         DrawTilesBox();
-        DrawKeyTitle(); 
+        DrawKeyTitle();
+        LoadMapFromGrid(); 
         break;
     case TAB_CONFIG:
         DrawArea(TAB_CONFIG);
@@ -312,8 +313,8 @@ void Gui::DrawTileInGrid(){
     graphic.DrawImage(GRID_X1+grid_cursor_X*TILES_W_H, GRID_Y1+grid_cursor_Y*TILES_W_H, tile_Selected); 
 
     // Set information for the cursor grid and save in grid
-   map.SetCursor(grid_cursor_X, grid_cursor_Y, GRID_X1+grid_cursor_X*TILES_W_H, GRID_Y1+grid_cursor_Y*TILES_W_H, tile_Selected);
-   map.SaveCursorToGrid();
+    map.SetCursor(grid_cursor_X, grid_cursor_Y, GRID_X1+grid_cursor_X*TILES_W_H, GRID_Y1+grid_cursor_Y*TILES_W_H, tile_Selected);
+    map.SaveCursorToGrid();
 
 }
 
@@ -380,6 +381,7 @@ void Gui::checkKeyForSelTile(char key){
 }
     
 void Gui::ActionKey(char key){
+uint8_t exit =0;
 
     // TODO: Verify is the keys are the TAB Key so change the TAB
     switch (key)
@@ -389,6 +391,7 @@ void Gui::ActionKey(char key){
         if (currentTab != TAB_FILES){
             currentTab = TAB_FILES;
             DrawScreen();
+            exit =  1;
         }
         break;
 
@@ -397,6 +400,7 @@ void Gui::ActionKey(char key){
         if (currentTab != TAB_TILES){
             currentTab = TAB_TILES;
             DrawScreen();
+             exit =  1;
         }
         break;
 
@@ -404,7 +408,8 @@ void Gui::ActionKey(char key){
     case KEY_C_R2:
         if (currentTab != TAB_EDITOR){
             currentTab = TAB_EDITOR;
-            DrawScreen();
+            DrawScreen(); 
+            exit =  1;
         }
         break;
         
@@ -412,7 +417,8 @@ void Gui::ActionKey(char key){
     case KEY_C_T2:
         if (currentTab != TAB_CONFIG){
             currentTab = TAB_CONFIG;
-            DrawScreen();
+            DrawScreen(); 
+            exit =  1;
         }
         break;
                         
@@ -420,27 +426,30 @@ void Gui::ActionKey(char key){
         break;
     }
 
-    switch (currentTab){
-        case TAB_FILES:
-            ActionTabFile(key);
-            break;
-        case TAB_TILES:
-            ActionTabTile(key);
-            break;
-        case TAB_EDITOR:
-            ActionTabEditor(key);
-            break;
-        case TAB_CONFIG:
-            ActionTabConfig(key);
-            break;
-        default:
-            break;
+    if (exit == 0) {
+        switch (currentTab){
+            case TAB_FILES:
+                ActionTabFile(key);
+                break;
+            case TAB_TILES:
+                ActionTabTile(key);
+                break;
+            case TAB_EDITOR:
+                ActionTabEditor(key);
+                break;
+            case TAB_CONFIG:
+                ActionTabConfig(key);
+                break;
+            default:
+                break;
+        }
     }
-
 }
 
 void Gui::ActionTabFile(char key){
-unsigned char namefile[40];
+uint8_t k;
+unsigned char namefileGfx[] = {12, 'g', 'r', 'a', 'p', 'h', 'i', 'c', 's', '.', 'g', 'f', 'x'};
+unsigned char namefileMap[] = {8, 'm', 'a', 'p', '0', '.', 'm', 'a', 'p'};
 
     switch (key){
         case KEY_C_L1:
@@ -449,27 +458,51 @@ unsigned char namefile[40];
             file.DisplayDirectory();
             console.CheckKeyboardArray();
             console.gotoxy(10,10);
-            puts("SCRIVI");
-            console.ReadLine((int) namefile);
-            puts((char *) namefile);
-            //file.LoadGrafix(namefile);
+            puts("CARICA FILE MAP");
+            //console.ReadLine((int) namefile);
+            //puts((char *) namefile);
+            map.LoadMap(namefileMap);
             break;
+
         case KEY_C_S1:
         case KEY_C_S2:
+            console.clrscr();
+            file.DisplayDirectory();
+            console.CheckKeyboardArray();
+            console.gotoxy(10,10);
+            puts("SAVE FILE MAP");
+            //console.ReadLine((int) namefile);
+            //puts((char *) namefile);
+            map.SaveMap(namefileMap);
             break;
+
         case KEY_C_N1:
         case KEY_C_N2:
+            console.clrscr();
+            console.gotoxy(0,10);
+            puts("THE MAP WILL BE DELETE. ARE YOU SURE TO CONTINUE (Y/N)?");
+            console.CheckKeyboardArray();
+            k=console.cgetc();
+            if ((k=='Y') || (k=='y')) ResetMap();
             break;
+
         case KEY_C_G1:
         case KEY_C_G2:
+            console.clrscr();
+            file.DisplayDirectory();
+            console.CheckKeyboardArray();
+            console.gotoxy(10,10);
+            puts("CARICA FILE GFX");
+            //console.ReadLine((int) namefile);
+            //puts((char *) namefile);
+            file.LoadGrafix(namefileGfx);
+            ReadGfxValue();
             break;
+
         case KEY_C_A1:
         case KEY_C_A2:
             break;
-        case KEY_C_DOWN:
-            break;
-        case KEY_C_SPACE:
-            break;
+
         default:
             break;
     }
@@ -528,11 +561,52 @@ char tmp;
 }
 
 void Gui::ActionTabConfig(char key){
+char k;
+    switch (key){
+        case KEY_C_N1:
+        case KEY_C_N2:
+            break;
+        default:
+            break;
+    }
 
 }
 
+void Gui::ResetMap(){
+uint8_t k, rows, cols;
+ 
+    console.clrscr();
+    console.gotoxy(10,10);
+    puts("INSERT NR ROWS OF MAP");
+    console.CheckKeyboardArray();
+    k=console.cgetc();
+
+    console.clrscr();
+    console.gotoxy(10,40);
+    puts("INSERT NR COLS OF MAP");
+    console.CheckKeyboardArray();
+    k=console.cgetc();
+
+
+}
 
 uint8_t Gui::WhichTABVisible(){
     return currentTab;
  }
 
+void Gui::LoadMapFromGrid(){
+uint8_t tile;
+    for (int y = 0; y < map.GetCols(); y++)
+    {
+
+        for (int x = 0; x < map.GetRows(); x++)
+        {
+            tile = map.GetItemFromGrid(map.GetRows()*y+x);
+            if (tile != 0xff)
+                graphic.DrawImage(GRID_X1+x*TILES_W_H, GRID_Y1+y*TILES_W_H, tile); 
+
+        }
+    }
+
+
+}
