@@ -68,11 +68,11 @@ void Gui::DrawFilesBox(){
 	console.cputc(0x81);
 	sprintf(strText, "FILE TILES:");
 	puts(strText);
-
+    /*
 	console.gotoxy(5, 20);
 	console.cputc(143);
 	puts("TILES:");
-
+    */
 }
 
 void Gui::DrawArea(uint8_t tab){
@@ -91,10 +91,12 @@ void Gui::DrawArea(uint8_t tab){
 
         // Prepare for imput
         DrawFilesBox();
+        /*
         graphic.SetColor(COLOR_WHITE);
         sprintf(strText," TAB %d",tab);
         strText[0]=5;
         graphic.Gfx_DrawString(50,200,strText);
+        */
         break;
 
     case TAB_TILES:
@@ -107,10 +109,12 @@ void Gui::DrawArea(uint8_t tab){
 
         graphic.SetColor(COLOR_DARK_GRAY);
         graphic.DrawRectangle(0,TITLE_TAB_Y2+1,320,TAB_BOARD_Y1-1);
+        /*
         graphic.SetColor(COLOR_WHITE);
         sprintf(strText," TAB %d",tab);
         strText[0]=5;
-        graphic.Gfx_DrawString(50,200,strText);       
+        graphic.Gfx_DrawString(50,200,strText);   
+        */    
         break;
 
     case TAB_EDITOR:
@@ -118,10 +122,12 @@ void Gui::DrawArea(uint8_t tab){
         graphic.SetColor(COLOR_BLACK);
         graphic.DrawRectangle(0,TITLE_TAB_Y2+1,TAB_BOARD_X2,TAB_BOARD_Y1-1);
         graphic.DrawRectangle(START_POS_X,0,320,TAB_BOARD_Y2);
+        /*
         graphic.SetColor(COLOR_WHITE);
         sprintf(strText," TAB %d",tab);
         strText[0]=5;
-        graphic.Gfx_DrawString(50,200,strText);      
+        graphic.Gfx_DrawString(50,200,strText);   
+        */   
         break;
 
     case TAB_CONFIG:
@@ -134,10 +140,12 @@ void Gui::DrawArea(uint8_t tab){
         //Draw the Files Config
         graphic.SetColor(COLOR_DARK_GRAY);
         graphic.DrawRectangle(0,TITLE_TAB_Y2+1,320,TAB_BOARD_Y1-1);
+        /*
         graphic.SetColor(COLOR_WHITE);
         sprintf(strText," TAB %d",tab);
         strText[0]=5;
         graphic.Gfx_DrawString(50,200,strText);     
+        */
         break;
     
     default:
@@ -552,12 +560,13 @@ char tmp;
             checkKeyForSelTile(key);
             break;
     }
-
+/*
     graphic.SetColor(COLOR_WHITE);
     graphic.SetSolidFlag(1);
     sprintf(strText," KEY %d %d",tiles_page,end_tiles_page);
     strText[0]=7;
     graphic.Gfx_DrawString(50,150,strText);    
+*/
 }
 
 void Gui::ActionTabConfig(char key){

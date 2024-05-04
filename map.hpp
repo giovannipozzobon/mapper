@@ -62,7 +62,7 @@ public:
     int GetCols();
     int GetItemFromGrid(int index);
     void ResetMap();
-    void SetNewMap();
+   
 
 };
 

@@ -206,6 +206,8 @@ public:
     void ReadGfxValue();
 
     uint8_t WhichTABVisible();
+
+    void SetNewMap();
     
 };
 
