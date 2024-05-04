@@ -13,6 +13,8 @@ rm -f *.o mapper.neo mapper.map {,.temp}
 
 /Users/giovanni.pozzobon/Documents/GitHub/llvm-mos-sdk/bin/mos-neo6502-clang++ -Os  main.cpp gui.cpp mouse.cpp console.cpp util.cpp file.cpp graphic.cpp blitter.cpp map.cpp -o mapper.neo 
 
+#crete exec mappeer and copy in storage 
+ python3 exec.zip mapper.neo@800 run@800 -o./storage/mapper.neo
 
 # launch emulator
 test -f mapper.neo && ./neo mapper.neo@800 cold
