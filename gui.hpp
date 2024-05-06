@@ -163,6 +163,8 @@ private:
     int grid_cursor_Y_old=0; //Expressed in number of tiles
     int offset_X=0; //Offset X for grid
     int offset_Y=0; //Offset Y for grid
+    int offset_X_old=0; //Offset X for grid
+    int offset_Y_old=0; //Offset Y for grid
     int offset_max_X=0; //Offset max X for grid
     int offset_max_Y=0; //Offset max Y for grid
      uint8_t offset_changed =0;

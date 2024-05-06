@@ -12,9 +12,9 @@ Gui::Gui()
     map.SetRowColNrItems(20,15);
     
     // Set the offset for the grid
-    offset_max_X = rows_grid /STEP_GRID_X;
-    offset_max_Y = cols_grid /STEP_GRID_Y;
-    map.SetCursor(0,0,0,0,0xff); //no tiles present in grid where is the cursor
+    offset_max_X = rows_grid - NR_TILES_HR;
+    offset_max_Y = cols_grid - NR_TILES_VE;
+    map.SetCursor(0,0,0,0,0,0,0xff); //no tiles present in grid where is the cursor
 }
 
 void Gui::ReadGfxValue(){
@@ -312,8 +312,9 @@ void Gui::DrawKeyTitle(){
 void Gui::DrawCursorSquare(){
 int pos_with_offset;
 
-    pos_with_offset = offset_Y*STEP_GRID_Y*map.GetRows()+map.GetRows()*grid_cursor_Y_old+offset_X*STEP_GRID_X+grid_cursor_X_old;
-     //Update information for old position of cursor 
+    //pos_with_offset = offset_Y*STEP_GRID_Y*map.GetRows()+map.GetRows()*grid_cursor_Y_old+offset_X*STEP_GRID_X+grid_cursor_X_old;
+    pos_with_offset = offset_Y_old*map.GetRows()+map.GetRows()*grid_cursor_Y_old+offset_X_old+grid_cursor_X_old;
+     //Update information for old position of cursor
     map.UpdateCursorFromGrid(grid_cursor_X_old, grid_cursor_Y_old,GRID_X1+grid_cursor_X_old*TILES_W_H, GRID_Y1+grid_cursor_Y_old*TILES_W_H, pos_with_offset);
 
 
@@ -334,6 +335,8 @@ int pos_with_offset;
         offset_changed = 0;
         ClearSpaceMap();
         LoadMapFromGrid();
+        offset_X_old = offset_X;
+        offset_Y_old = offset_Y;
     }
 
     graphic.SetSolidFlag(0);
@@ -342,7 +345,8 @@ int pos_with_offset;
 
     grid_cursor_X_old = grid_cursor_X;
     grid_cursor_Y_old = grid_cursor_Y;
-    
+
+
     //Print coordinate
     graphic.SetSolidFlag(1);
     graphic.SetColor(COLOR_BLACK); 
@@ -357,7 +361,7 @@ void Gui::DrawTileInGrid(){
     graphic.DrawImage(GRID_X1+grid_cursor_X*TILES_W_H, GRID_Y1+grid_cursor_Y*TILES_W_H, tile_Selected); 
 
     // Set information for the cursor grid and save in grid
-    map.SetCursor(grid_cursor_X, grid_cursor_Y, GRID_X1+grid_cursor_X*TILES_W_H, GRID_Y1+grid_cursor_Y*TILES_W_H, tile_Selected);
+    map.SetCursor(grid_cursor_X, grid_cursor_Y, offset_X, offset_Y, GRID_X1+grid_cursor_X*TILES_W_H, GRID_Y1+grid_cursor_Y*TILES_W_H, tile_Selected);
     map.SaveCursorToGrid();
 
 }
@@ -573,8 +577,10 @@ char tmp;
             grid_cursor_X--;
             if (grid_cursor_X < 0) {
                 offset_X--;
-                if (offset_X < 0) offset_X = offset_max_X; 
-                grid_cursor_X=NR_TILES_HR-1;
+                if (offset_X < 0) {
+                    offset_X = offset_max_X; 
+                    grid_cursor_X=NR_TILES_HR-1;
+                } else grid_cursor_X=0;
                 offset_changed = 1;
             }
             DrawCursorSquare();
@@ -586,7 +592,7 @@ char tmp;
                 if (offset_X > offset_max_X){
                     offset_X = 0;
                     grid_cursor_X = 0;
-                } else grid_cursor_X =STEP_GRID_X-1;
+                } else grid_cursor_X = NR_TILES_HR-1;
                 offset_changed = 1;
             }
             DrawCursorSquare();
@@ -595,8 +601,10 @@ char tmp;
             grid_cursor_Y--;
             if (grid_cursor_Y < 0) {
                 offset_Y--;
-                if (offset_Y < 0) offset_Y = offset_max_Y; 
-                grid_cursor_Y=NR_TILES_VE-1;
+                if (offset_Y < 0){ 
+                    offset_Y = offset_max_Y; 
+                    grid_cursor_Y=NR_TILES_VE-1;
+                } else grid_cursor_Y=0;
                 offset_changed = 1;
             }            
             DrawCursorSquare();
@@ -608,7 +616,7 @@ char tmp;
                 if (offset_Y > offset_max_Y){
                     offset_Y = 0;
                     grid_cursor_Y = 0;
-                } else grid_cursor_Y =STEP_GRID_Y-1; 
+                } else grid_cursor_Y =NR_TILES_VE-1; 
                 offset_changed = 1;        
             }
             DrawCursorSquare();
@@ -695,7 +703,7 @@ uint8_t tile;
 
         for (int x = 0; x < NR_TILES_HR; x++)
         {
-            tile = map.GetItemFromGrid(offset_Y*STEP_GRID_Y*map.GetRows()+map.GetRows()*y+offset_X*STEP_GRID_X+x);
+            tile = map.GetItemFromGrid(offset_Y*map.GetRows()+map.GetRows()*y+offset_X+x);
             if (tile != 0xff)
                 graphic.DrawImage(GRID_X1+x*TILES_W_H, GRID_Y1+y*TILES_W_H, tile); 
 

@@ -17,6 +17,8 @@ private:
     {
         uint8_t cursor_grid_x;
         uint8_t cursor_grid_y;
+        uint8_t cursor_offset_x;
+        uint8_t cursor_offset_y;
         int cursor_map_x;
         int cursor_map_y;             
         uint8_t imageID; 
@@ -49,7 +51,7 @@ public:
     void SetMapMaxLen(int len);
     uint8_t SetRowColNrItems(uint8_t row, uint8_t col);
 
-    void SetCursor(uint8_t cursor_grid_x, uint8_t cursor_grid_y, int cursor_map_x, int cursor_map_y, uint8_t imageID);
+    void SetCursor(uint8_t cursor_grid_x, uint8_t cursor_grid_y, uint8_t cursor_offset_x, uint8_t cursor_offset_y, int cursor_map_x, int cursor_map_y, uint8_t imageID);
 
     uint8_t ReadCursorImageID();
     int ReadCursorMapX();

@@ -53,9 +53,12 @@ uint8_t Map::SetRowColNrItems(uint8_t row, uint8_t col){
 
 }
 
- void Map::SetCursor(uint8_t cursor_grid_x, uint8_t cursor_grid_y, int cursor_map_x, int cursor_map_y, uint8_t imageID){
+ void Map::SetCursor(uint8_t cursor_grid_x, uint8_t cursor_grid_y, uint8_t cursor_offset_x, uint8_t cursor_offset_y, int cursor_map_x, int cursor_map_y, uint8_t imageID)
+{
     cursor.cursor_grid_x = cursor_grid_x;
     cursor.cursor_grid_y = cursor_grid_y;
+    cursor.cursor_offset_x = cursor_offset_x;
+    cursor.cursor_offset_y = cursor_offset_y;
     cursor.cursor_map_x = cursor_map_x;
     cursor.cursor_map_y = cursor_map_y;
     cursor.imageID = imageID;
@@ -79,7 +82,7 @@ void Map::UpdateCursorFromGrid(uint8_t grid_x, uint8_t grid_y, int map_x, int ma
 }
 
 void Map::SaveCursorToGrid(){
-    grid_addr_ram[cursor.cursor_grid_x+cursor.cursor_grid_y*NrRow] = cursor.imageID;
+    grid_addr_ram[cursor.cursor_grid_x+cursor.cursor_offset_x+(cursor.cursor_grid_y+cursor.cursor_offset_y)*NrRow] = cursor.imageID;
 }
 
 int Map::GetMapAddress(){
