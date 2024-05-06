@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <cstdint>
+#include <stdlib.h>
 
 
 class Console {

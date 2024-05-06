@@ -64,6 +64,8 @@
 #define KEY_C_DOWN 	        19		// Cursor Down
 #define KEY_C_UP 		    23		// Cursor Up
 #define KEY_C_SPACE 		32		// Cursor Up
+#define KEY_C_Y1     		89		// Fill
+#define KEY_C_Y2     		121		// Fill
 
 //Action Keys File & Config
 #define KEY_C_L1		    76		
@@ -76,6 +78,7 @@
 #define KEY_C_G2     		103	
 #define KEY_C_A1     		65		
 #define KEY_C_A2     		97	
+#define LENFILENAMEMAX      30
 
 
 //Editor Grid
@@ -138,6 +141,7 @@ private:
     char strText [sizeof(int)*40+1];
     char strChar[2]={1,65};
     char value_gfx [16];
+    unsigned char fileName[LENFILENAMEMAX];
 
 
     // Tiles Box variables
@@ -224,6 +228,8 @@ public:
     uint8_t WhichTABVisible();
 
     void SetNewMap();
+
+    void FillGrid();
     
 };
 

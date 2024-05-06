@@ -34,7 +34,7 @@ void Map::SetMapMaxLen(int len){
     max_addr_ram = grid_addr_ram + len;
 }
 
-uint8_t Map::SetRowColNrItems(uint8_t row, uint8_t col){
+uint8_t Map::SetRowColNrItems(uint8_t row, uint8_t col, uint8_t fill){
 
     NrRow = row;
     NrCol = col;
@@ -47,7 +47,7 @@ uint8_t Map::SetRowColNrItems(uint8_t row, uint8_t col){
         grid_addr_init[0] = 1;
         grid_addr_init[1] = row;
         grid_addr_init[2] = col;
-        FillMem(0xff);
+        if (fill) FillMem(0xff);
         return OK;
     }
 
@@ -92,6 +92,7 @@ int Map::GetMapAddress(){
 uint8_t Map::LoadMap(unsigned char * namefile){
 
     file.LoadFile((int) grid_addr_init, namefile);
+    SetRowColNrItems(grid_addr_init[1],  grid_addr_init[2], 0);
     return OK;
 
 }
@@ -113,4 +114,19 @@ int Map::GetItemFromGrid(int index){
 
 void Map::ResetMap(){
     FillMem(0xff);
+}
+
+
+
+int Map::FillMap(uint8_t value){
+
+    if ((grid_addr_ram == 0) || (max_len_map ==0)) return ERROR;
+
+    for(int i=0; i<nr_item; i++){
+       
+       if (grid_addr_ram[i] == 0Xff) grid_addr_ram[i]= value;
+
+    }    
+    return OK;
+
 }

@@ -9,7 +9,7 @@ Gui::Gui()
     //initialize map
     map.SetMapInitialAddress(MMAP_ADDRESS);
     map.SetMapMaxLen(MMAP_MAX_LEN);
-    map.SetRowColNrItems(20,15);
+    map.SetRowColNrItems(20,15,1);
     
     // Set the offset for the grid
     offset_max_X = rows_grid - NR_TILES_HR;
@@ -187,7 +187,7 @@ char * tmpstr;
 
 uint8_t Gui::SetRowColNrItems(uint8_t row, uint8_t col){
 
-    return map.SetRowColNrItems(row,col);
+    return map.SetRowColNrItems(row,col,1);
 }
 
 
@@ -506,10 +506,13 @@ unsigned char namefileMap[] = {8, 'm', 'a', 'p', '0', '.', 'm', 'a', 'p'};
             file.DisplayDirectory();
             console.CheckKeyboardArray();
             console.gotoxy(10,10);
-            puts("CARICA FILE MAP");
+            puts("LOAD FILE MAP \n");
+            InputFileName();
             //console.ReadLine((int) namefile);
             //puts((char *) namefile);
-            map.LoadMap(namefileMap);
+            DrawBoardText((char *)fileName);
+            map.LoadMap(fileName);
+            puts("\n \n FILE MAP LOADED");
             break;
 
         case KEY_C_S1:
@@ -518,10 +521,13 @@ unsigned char namefileMap[] = {8, 'm', 'a', 'p', '0', '.', 'm', 'a', 'p'};
             file.DisplayDirectory();
             console.CheckKeyboardArray();
             console.gotoxy(10,10);
-            puts("SAVE FILE MAP");
+            puts("SAVE FILE MAP \n");
             //console.ReadLine((int) namefile);
             //puts((char *) namefile);
-            map.SaveMap(namefileMap);
+            InputFileName();
+            DrawBoardText((char *)fileName);
+            map.SaveMap(fileName);
+            puts("\n \n FILE MAP SAVED");
             break;
 
         case KEY_C_N1:
@@ -559,6 +565,7 @@ unsigned char namefileMap[] = {8, 'm', 'a', 'p', '0', '.', 'm', 'a', 'p'};
 void Gui::ActionTabTile(char key){
 
 }
+
 
 void Gui::ActionTabEditor(char key){
 char tmp;
@@ -624,6 +631,11 @@ char tmp;
         case KEY_C_SPACE:
             DrawTileInGrid();
             break;
+        case KEY_C_Y1:
+        case KEY_C_Y2:
+            FillGrid();
+            break;
+
         default:
             checkKeyForSelTile(key);
             break;
@@ -650,11 +662,18 @@ char k;
 }
 
 void Gui::ResetMap(){
-uint8_t k, rows, cols;
  
     map.ResetMap();
 
 }
+
+void Gui::FillGrid(){
+ 
+    map.FillMap(tile_Selected);
+    LoadMapFromGrid(); 
+
+}
+
 
 void Gui::SetNewMap(){
 uint8_t k, rows, cols;
@@ -677,24 +696,6 @@ uint8_t k, rows, cols;
 uint8_t Gui::WhichTABVisible(){
     return currentTab;
  }
-/*
-void Gui::LoadMapFromGrid(){
-uint8_t tile;
-    for (int y = 0; y < map.GetCols(); y++)
-    {
-
-        for (int x = 0; x < map.GetRows(); x++)
-        {
-            tile = map.GetItemFromGrid(map.GetRows()*y+x);
-            if (tile != 0xff)
-                graphic.DrawImage(GRID_X1+x*TILES_W_H, GRID_Y1+y*TILES_W_H, tile); 
-
-        }
-    }
-
-
-}
-*/
 
 void Gui::LoadMapFromGrid(){
 uint8_t tile;
@@ -714,3 +715,24 @@ uint8_t tile;
 
 }
 
+void Gui::InputFileName(){
+char key,i;
+
+	console.gotoxy(0, 14);
+	console.cputc(135);
+	puts("Enter the file name: \n");
+	//console.gotoxy(31,14);
+    i=1;
+	do {
+		key = console.cgetc();
+        console.cputc(key); 
+        fileName[i] = key;
+	    if (key != 8) i++;
+
+	} while (key != 13);//while ((key != 13) && (i <= LENFILENAMEMAX));
+
+    //DrawBoardText((char *)fileName);
+    //console.write(fileName, i-2);
+    //sub #13 and the first position infact i start from 1
+    fileName[0]=i-2;
+}
