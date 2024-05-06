@@ -54,7 +54,7 @@ public:
     uint8_t ReadCursorImageID();
     int ReadCursorMapX();
     int ReadCursorMapY();
-    void UpdateCursorFromGrid(uint8_t grid_x, uint8_t grid_y, int map_x, int map_y);
+    void UpdateCursorFromGrid(uint8_t grid_x, uint8_t grid_y, int map_x, int map_y, int pos_with_offset);
     void SaveCursorToGrid();
     int GetMapAddress();
     int GetItems();

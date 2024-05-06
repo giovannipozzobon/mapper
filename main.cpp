@@ -46,9 +46,9 @@ int main(){
 
         //kstatus =console.KeyModifierStatus(key);
         //sprintf(buffer," %d %d %d %d %c",mouse.X, mouse.Y, mouse.leftBtnUp, mouse.rigthBtnUp, key);
-        sprintf(buffer," %i", key);
-        buffer[0]=40;
-        gui.DrawBoardText(buffer);
+        //sprintf(buffer," %i", key);
+        //buffer[0]=40;
+        //gui.DrawBoardText(buffer);
     
         util.nop_delay(5000);
     }

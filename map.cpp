@@ -39,6 +39,7 @@ uint8_t Map::SetRowColNrItems(uint8_t row, uint8_t col){
     NrRow = row;
     NrCol = col;
     nr_item = (int) row * (int) col;
+
     if (nr_item > max_len_map) 
         return ERROR; 
     else{ 
@@ -67,13 +68,14 @@ int Map::ReadCursorMapX(){ return cursor.cursor_map_x;}
 
 int Map::ReadCursorMapY(){ return cursor.cursor_map_y;}
 
-void Map::UpdateCursorFromGrid(uint8_t grid_x, uint8_t grid_y, int map_x, int map_y){
+void Map::UpdateCursorFromGrid(uint8_t grid_x, uint8_t grid_y, int map_x, int map_y, int pos_with_offset){
     //take the imageId from memory
-    cursor.imageID=grid_addr_ram[grid_x+grid_y*NrRow];
+    cursor.imageID=grid_addr_ram[pos_with_offset];
     cursor.cursor_grid_x = grid_x;
     cursor.cursor_grid_y = grid_y;
     cursor.cursor_map_x=map_x;
     cursor.cursor_map_y=map_y;
+
 }
 
 void Map::SaveCursorToGrid(){

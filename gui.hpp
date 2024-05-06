@@ -85,6 +85,9 @@
 #define GRID_Y2             223
 #define NR_TILES_HR         16
 #define NR_TILES_VE         13
+#define STEP_GRID_X         8
+#define STEP_GRID_Y         6
+
 
 //Memory address for tiles map 
 #define MMAP_ADDRESS  0xD000 // initial Address of grid's memory 
@@ -158,6 +161,13 @@ private:
     int grid_cursor_Y=0; //Expressed in number of tiles
     int grid_cursor_X_old=0; //Expressed in number of tiles
     int grid_cursor_Y_old=0; //Expressed in number of tiles
+    int offset_X=0; //Offset X for grid
+    int offset_Y=0; //Offset Y for grid
+    int offset_max_X=0; //Offset max X for grid
+    int offset_max_Y=0; //Offset max Y for grid
+     uint8_t offset_changed =0;
+
+
     
     // Functions to Draw screen
     void DrawTabs();
@@ -174,6 +184,10 @@ private:
     void DrawTileInGrid();
     void ClearSpaceTiles();
     void LoadMapFromGrid();
+    void ClearSpaceMap();
+
+
+
 
     // Functions of Files Box
     void DrawFilesBox();

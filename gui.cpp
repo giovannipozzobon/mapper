@@ -1,6 +1,22 @@
 #include "gui.hpp"
 
 
+Gui::Gui()
+{
+    int rows_grid = 20;
+    int cols_grid = 15;
+
+    //initialize map
+    map.SetMapInitialAddress(MMAP_ADDRESS);
+    map.SetMapMaxLen(MMAP_MAX_LEN);
+    map.SetRowColNrItems(20,15);
+    
+    // Set the offset for the grid
+    offset_max_X = rows_grid /STEP_GRID_X;
+    offset_max_Y = cols_grid /STEP_GRID_Y;
+    map.SetCursor(0,0,0,0,0xff); //no tiles present in grid where is the cursor
+}
+
 void Gui::ReadGfxValue(){
 
     blitter.WaitBlitter();
@@ -167,14 +183,7 @@ char * tmpstr;
 };
 */
 
-Gui::Gui()
-{
-      //initialize map
-    map.SetMapInitialAddress(MMAP_ADDRESS);
-    map.SetMapMaxLen(MMAP_MAX_LEN);
-    map.SetRowColNrItems(20,15);
-    map.SetCursor(0,0,0,0,0xff); //no tiles present in grid where is the cursor
-}
+
 
 uint8_t Gui::SetRowColNrItems(uint8_t row, uint8_t col){
 
@@ -224,6 +233,15 @@ void Gui::ClearSpaceTiles(){
     graphic.SetColor(COLOR_BLACK);
     graphic.DrawRectangle(START_POS_X-1,START_POS_Y,START_POS_X+TILES_W_H,TAB_BOARD_Y1-1);
     graphic.DrawRectangle(START_POS_X+TILES_W_H+SPACE_TILE_CHAR+CHAR_LEN-1,START_POS_Y,START_POS_X+2*TILES_W_H+SPACE_TILE_CHAR+CHAR_LEN,TAB_BOARD_Y1-1);
+}
+
+void Gui::ClearSpaceMap(){
+
+    // Clear the space of tiles
+    graphic.SetSolidFlag(1);
+    graphic.SetColor(COLOR_BLACK);
+    graphic.DrawRectangle(0,TITLE_TAB_Y2-1,START_POS_X-1,TAB_BOARD_Y1-1);
+  
 }
 
 void Gui::DrawTilesBox(){
@@ -292,18 +310,30 @@ void Gui::DrawKeyTitle(){
 }
 
 void Gui::DrawCursorSquare(){
+int pos_with_offset;
 
-     //Update information for new position of cursor 
-    map.UpdateCursorFromGrid(grid_cursor_X_old, grid_cursor_Y_old,GRID_X1+grid_cursor_X_old*TILES_W_H, GRID_Y1+grid_cursor_Y_old*TILES_W_H);
+    pos_with_offset = offset_Y*STEP_GRID_Y*map.GetRows()+map.GetRows()*grid_cursor_Y_old+offset_X*STEP_GRID_X+grid_cursor_X_old;
+     //Update information for old position of cursor 
+    map.UpdateCursorFromGrid(grid_cursor_X_old, grid_cursor_Y_old,GRID_X1+grid_cursor_X_old*TILES_W_H, GRID_Y1+grid_cursor_Y_old*TILES_W_H, pos_with_offset);
 
-    // if ImagaID is -1 then draw a black box else draw the image saved
-    if (map.ReadCursorImageID() == 0xff) {
-        graphic.SetSolidFlag(0);
-        graphic.SetColor(COLOR_BLACK); 
-        graphic.DrawRectangle(GRID_X1+grid_cursor_X_old*TILES_W_H,GRID_Y1+grid_cursor_Y_old*TILES_W_H,GRID_X1+grid_cursor_X_old*TILES_W_H+TILES_W_H-1, GRID_Y1+grid_cursor_Y_old*TILES_W_H+TILES_W_H-1);
-    } else {
-        graphic.SetSolidFlag(1);
-        graphic.DrawImage(map.ReadCursorMapX(), map.ReadCursorMapY(), map.ReadCursorImageID());
+
+    if (offset_changed==0) {
+
+        // if ImagaID is -1 then draw a black box else draw the image saved
+        if (map.ReadCursorImageID() == 0xff) {
+            graphic.SetSolidFlag(0);
+            graphic.SetColor(COLOR_BLACK); 
+            graphic.DrawRectangle(GRID_X1+grid_cursor_X_old*TILES_W_H,GRID_Y1+grid_cursor_Y_old*TILES_W_H,GRID_X1+grid_cursor_X_old*TILES_W_H+TILES_W_H-1, GRID_Y1+grid_cursor_Y_old*TILES_W_H+TILES_W_H-1);
+        } else {
+            graphic.SetSolidFlag(1);
+            graphic.DrawImage(map.ReadCursorMapX(), map.ReadCursorMapY(), map.ReadCursorImageID());
+        }
+
+    }
+    else  { //offset is changed so redraw all the grid using the new coordination
+        offset_changed = 0;
+        ClearSpaceMap();
+        LoadMapFromGrid();
     }
 
     graphic.SetSolidFlag(0);
@@ -312,7 +342,13 @@ void Gui::DrawCursorSquare(){
 
     grid_cursor_X_old = grid_cursor_X;
     grid_cursor_Y_old = grid_cursor_Y;
-
+    
+    //Print coordinate
+    graphic.SetSolidFlag(1);
+    graphic.SetColor(COLOR_BLACK); 
+    sprintf(strText," X:%d  Y:%d OX:%d OY:%d", grid_cursor_X, grid_cursor_Y, offset_X, offset_Y);
+    strText[0]=40;
+    DrawBoardText(strText);
 
 }
 
@@ -535,22 +571,46 @@ char tmp;
             break;
         case KEY_C_LEFT:
             grid_cursor_X--;
-            if (grid_cursor_X < 0) grid_cursor_X=NR_TILES_HR-1;
+            if (grid_cursor_X < 0) {
+                offset_X--;
+                if (offset_X < 0) offset_X = offset_max_X; 
+                grid_cursor_X=NR_TILES_HR-1;
+                offset_changed = 1;
+            }
             DrawCursorSquare();
             break;
         case KEY_C_RIGHT:
             grid_cursor_X++;
-            if (grid_cursor_X >= NR_TILES_HR) grid_cursor_X=0;
+            if (grid_cursor_X >= NR_TILES_HR) {
+                offset_X++;
+                if (offset_X > offset_max_X){
+                    offset_X = 0;
+                    grid_cursor_X = 0;
+                } else grid_cursor_X =STEP_GRID_X-1;
+                offset_changed = 1;
+            }
             DrawCursorSquare();
             break;
         case KEY_C_UP:
             grid_cursor_Y--;
-            if (grid_cursor_Y < 0) grid_cursor_Y=NR_TILES_VE-1;            
+            if (grid_cursor_Y < 0) {
+                offset_Y--;
+                if (offset_Y < 0) offset_Y = offset_max_Y; 
+                grid_cursor_Y=NR_TILES_VE-1;
+                offset_changed = 1;
+            }            
             DrawCursorSquare();
             break;
         case KEY_C_DOWN:
             grid_cursor_Y++;
-            if (grid_cursor_Y >= NR_TILES_VE) grid_cursor_Y=0;            
+            if (grid_cursor_Y >= NR_TILES_VE){
+                offset_Y++;
+                if (offset_Y > offset_max_Y){
+                    offset_Y = 0;
+                    grid_cursor_Y = 0;
+                } else grid_cursor_Y =STEP_GRID_Y-1; 
+                offset_changed = 1;        
+            }
             DrawCursorSquare();
             break;
         case KEY_C_SPACE:
@@ -609,7 +669,7 @@ uint8_t k, rows, cols;
 uint8_t Gui::WhichTABVisible(){
     return currentTab;
  }
-
+/*
 void Gui::LoadMapFromGrid(){
 uint8_t tile;
     for (int y = 0; y < map.GetCols(); y++)
@@ -626,3 +686,23 @@ uint8_t tile;
 
 
 }
+*/
+
+void Gui::LoadMapFromGrid(){
+uint8_t tile;
+    for (int y = 0; y < NR_TILES_VE; y++)
+    {
+
+        for (int x = 0; x < NR_TILES_HR; x++)
+        {
+            tile = map.GetItemFromGrid(offset_Y*STEP_GRID_Y*map.GetRows()+map.GetRows()*y+offset_X*STEP_GRID_X+x);
+            if (tile != 0xff)
+                graphic.DrawImage(GRID_X1+x*TILES_W_H, GRID_Y1+y*TILES_W_H, tile); 
+
+        }
+
+    }
+
+
+}
+
