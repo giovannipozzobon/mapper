@@ -1,7 +1,7 @@
 #include "file.hpp"
 
 
-uint8_t File::LoadGrafix(unsigned char * file){   
+uint8_t File::LoadGrafix(char * file){   
 
 	int ptr = (int) &file[0];	
 
@@ -26,7 +26,7 @@ void File::DisplayDirectory()
 
 }
 
-void File::OpenFile(uint8_t channel, unsigned char *  fileName, uint8_t mode)
+void File::OpenFile(uint8_t channel, char *  fileName, uint8_t mode)
 {
 	int ptr = (int) &fileName[0];
   	*API_FUNCTION_ADDR     = API_FN_OPEN_FILE;
@@ -70,7 +70,7 @@ uint8_t File::WriteFile(uint8_t channel, int memory, int nrbyte)
 }
 
 
-uint8_t File::LoadFile( int memory, unsigned char * fileName)
+uint8_t File::LoadFile( int memory, char * fileName)
 {
 	int ptr = (int) &fileName[0];
   	*API_FUNCTION_ADDR     = API_FN_LOAD_FILE;
@@ -84,7 +84,7 @@ uint8_t File::LoadFile( int memory, unsigned char * fileName)
 	  return API_PARAMETERS_ADDR[0];
 }
 
-uint8_t File::SaveFile( int memory, int nrbyte , unsigned char * fileName)
+uint8_t File::SaveFile( int memory, int nrbyte , char * fileName)
 {
 	int ptr = (int) &fileName[0];
   	*API_FUNCTION_ADDR     = API_FN_STORE_FILE;

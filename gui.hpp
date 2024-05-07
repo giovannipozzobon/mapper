@@ -11,6 +11,7 @@
 
 
 
+
 // TABS Constant
 #define TAB_WIDTH           60
 #define TAB_COUNT           4
@@ -91,10 +92,16 @@
 #define STEP_GRID_X         8
 #define STEP_GRID_Y         6
 
+//Editor Tiles
+#define NR_TILES_ROW        20
+#define NR_TILES_COl        15
+
+
 
 //Memory address for tiles map 
 #define MMAP_ADDRESS  0xD000 // initial Address of grid's memory 
 #define MMAP_MAX_LEN  0x2000 // must be multiply of 20*15 tiles. 8K
+
 
 class Gui {
 private:
@@ -141,8 +148,14 @@ private:
     char strText [sizeof(int)*40+1];
     char strChar[2]={1,65};
     char value_gfx [16];
-    unsigned char fileName[LENFILENAMEMAX];
-
+    char fileName[LENFILENAMEMAX];
+    char fileNameGfx[LENFILENAMEMAX];
+    char strInfo1[41];
+    char strInfo2[41];  
+    char strInfo3[41];
+    char strInfo4[41];
+    char strInfo5[41];
+    char strInfo6[41];
 
     // Tiles Box variables
     uint8_t currentTab = 0;
@@ -171,7 +184,7 @@ private:
     int offset_Y_old=0; //Offset Y for grid
     int offset_max_X=0; //Offset max X for grid
     int offset_max_Y=0; //Offset max Y for grid
-     uint8_t offset_changed =0;
+    uint8_t offset_changed =0;
 
 
     
@@ -198,6 +211,7 @@ private:
     // Functions of Files Box
     void DrawFilesBox();
     void InputFileName();
+    void InputFileNameGfx();
 
     //Functions Config
     void ResetMap();
@@ -230,6 +244,11 @@ public:
     void SetNewMap();
 
     void FillGrid();
+
+    void ShowInfoTabFile();
+
+    void DrawTilesInScreen();
+
     
 };
 

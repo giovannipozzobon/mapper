@@ -117,5 +117,59 @@ uint8_t Console::KeyModifierStatus(uint8_t  chr){
 
 }
 
+void Console::ReadString(char * str){
+uint8_t i, key;
+
+  i=0;
+  while (1) {
+      key=cgetc();
+      if (key == 13) {
+          break; // Esce dal ciclo se viene premuto INVIO
+      } else if (key == 8 || key == 26) {
+          if (i>0) {
+              i--;
+              cputc(key); 
+          }
+      } else {
+          // Aggiunge il carattere alla stringa di testo
+          i++;
+          cputc(key); 
+          str[i] = key;
+      }
+  }
+  
+  str[0]=i;
+  
+}
+
+int Console::ReadNumber(char * str, int len){
+uint8_t i, key;
+int value, dec;
+
+  i=0;
+  value=0;
+  while (1) {
+      key=cgetc();
+      if (key == 13 || i > len) {
+          break; // Esce dal ciclo se viene premuto INVIO
+      } else if (key == 8 || key == 26) {
+          if (i>0) {
+              i--;
+              cputc(key); 
+          }
+      } else if ((key>=48) && (key <= 57)){
+          // Aggiunge il carattere alla stringa di testo
+          i++;
+          cputc(key); 
+          str[i] = key;
+      }
+  }
+  
+  str[0]=i;
+  value = atoi(&str[1]);
+
+  return value;
+}
+
  
 

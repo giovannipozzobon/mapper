@@ -1,4 +1,4 @@
 implement TAB per Load Save and input Rows and Cols
-implement the Fill. Fill the map with the tile tile_Selected
-implement the Map larger the Editor. Scroll Up, Down, Rigth, and Left.
 implement Set New Map  
+move the input string (file name) to console
+Write to DrawBox the command text 

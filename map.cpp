@@ -47,7 +47,7 @@ uint8_t Map::SetRowColNrItems(uint8_t row, uint8_t col, uint8_t fill){
         grid_addr_init[0] = 1;
         grid_addr_init[1] = row;
         grid_addr_init[2] = col;
-        if (fill) FillMem(0xff);
+        if (fill==1) FillMem(0xff);
         return OK;
     }
 
@@ -89,7 +89,7 @@ int Map::GetMapAddress(){
     return (int) grid_addr_init;
 }
 
-uint8_t Map::LoadMap(unsigned char * namefile){
+uint8_t Map::LoadMap(char * namefile){
 
     file.LoadFile((int) grid_addr_init, namefile);
     SetRowColNrItems(grid_addr_init[1],  grid_addr_init[2], 0);
@@ -97,7 +97,7 @@ uint8_t Map::LoadMap(unsigned char * namefile){
 
 }
 
-uint8_t Map::SaveMap(unsigned char * namefile){
+uint8_t Map::SaveMap(char * namefile){
 
     file.SaveFile((int) grid_addr_init, nr_item+3, namefile);
     return OK;

@@ -1,6 +1,7 @@
 #include "gui.hpp"
 
 
+
 Gui::Gui()
 {
     int rows_grid = 20;
@@ -15,7 +16,8 @@ Gui::Gui()
     offset_max_X = rows_grid - NR_TILES_HR;
     offset_max_Y = cols_grid - NR_TILES_VE;
     map.SetCursor(0,0,0,0,0,0,0xff); //no tiles present in grid where is the cursor
-}
+   
+ }
 
 void Gui::ReadGfxValue(){
 
@@ -80,15 +82,28 @@ void Gui::DrawBoardText(char * str){
 
 void Gui::DrawFilesBox(){
 
-	console.gotoxy(16, 10);
-	console.cputc(0x81);
-	sprintf(strText, "FILE TILES:");
-	puts(strText);
-    /*
-	console.gotoxy(5, 20);
-	console.cputc(143);
-	puts("TILES:");
-    */
+    ShowInfoTabFile();
+}
+
+void Gui::DrawTilesInScreen(){
+    //draw all tiles togheter
+uint8_t x=0, y=0, tile=0;
+
+    for (int y = 0; y < NR_TILES_COl; y++)
+    {
+
+        for (int x = 0; x < NR_TILES_ROW; x++)
+        {
+            graphic.DrawImage(x*TILES_W_H, GRID_Y1+y*TILES_W_H, tile); 
+            tile++;
+            if (tile >= nr_tiles) break;
+
+        }
+
+        if (tile >= nr_tiles) break;
+    }
+
+
 }
 
 void Gui::DrawArea(uint8_t tab){
@@ -125,6 +140,8 @@ void Gui::DrawArea(uint8_t tab){
 
         graphic.SetColor(COLOR_DARK_GRAY);
         graphic.DrawRectangle(0,TITLE_TAB_Y2+1,320,TAB_BOARD_Y1-1);
+        DrawTilesInScreen();
+ 
         /*
         graphic.SetColor(COLOR_WHITE);
         sprintf(strText," TAB %d",tab);
@@ -448,7 +465,7 @@ uint8_t exit =0;
         if (currentTab != TAB_TILES){
             currentTab = TAB_TILES;
             DrawScreen();
-             exit =  1;
+            exit =  1;
         }
         break;
 
@@ -496,8 +513,6 @@ uint8_t exit =0;
 
 void Gui::ActionTabFile(char key){
 uint8_t k;
-unsigned char namefileGfx[] = {12, 'g', 'r', 'a', 'p', 'h', 'i', 'c', 's', '.', 'g', 'f', 'x'};
-unsigned char namefileMap[] = {8, 'm', 'a', 'p', '0', '.', 'm', 'a', 'p'};
 
     switch (key){
         case KEY_C_L1:
@@ -508,10 +523,11 @@ unsigned char namefileMap[] = {8, 'm', 'a', 'p', '0', '.', 'm', 'a', 'p'};
             console.gotoxy(10,10);
             puts("LOAD FILE MAP \n");
             InputFileName();
-            //console.ReadLine((int) namefile);
-            //puts((char *) namefile);
             DrawBoardText((char *)fileName);
             map.LoadMap(fileName);
+            // Set the offset for the grid
+            offset_max_X = map.GetRows() - NR_TILES_HR;
+            offset_max_Y = map.GetCols() - NR_TILES_VE;
             puts("\n \n FILE MAP LOADED");
             break;
 
@@ -522,8 +538,6 @@ unsigned char namefileMap[] = {8, 'm', 'a', 'p', '0', '.', 'm', 'a', 'p'};
             console.CheckKeyboardArray();
             console.gotoxy(10,10);
             puts("SAVE FILE MAP \n");
-            //console.ReadLine((int) namefile);
-            //puts((char *) namefile);
             InputFileName();
             DrawBoardText((char *)fileName);
             map.SaveMap(fileName);
@@ -546,15 +560,21 @@ unsigned char namefileMap[] = {8, 'm', 'a', 'p', '0', '.', 'm', 'a', 'p'};
             file.DisplayDirectory();
             console.CheckKeyboardArray();
             console.gotoxy(10,10);
-            puts("CARICA FILE GFX");
-            //console.ReadLine((int) namefile);
-            //puts((char *) namefile);
-            file.LoadGrafix(namefileGfx);
+            puts("CARICA FILE GFX\n");
+            InputFileNameGfx();
+            DrawBoardText((char *)fileNameGfx);
+            file.LoadGrafix(fileNameGfx);
+            puts("\n \n FILE GFX LOADED\n");
             ReadGfxValue();
             break;
 
         case KEY_C_A1:
         case KEY_C_A2:
+            console.clrscr();
+            console.CheckKeyboardArray();
+            console.gotoxy(10,10);
+            puts("Insert the new size of map");
+            SetNewMap();
             break;
 
         default:
@@ -677,20 +697,22 @@ void Gui::FillGrid(){
 
 void Gui::SetNewMap(){
 uint8_t k, rows, cols;
- 
+char strNr[10]; 
 
-    console.clrscr();
-    console.gotoxy(10,10);
-    puts("INSERT NR ROWS OF MAP");
+    console.gotoxy(10,30);
+    console.cputc(135);
+    puts("Insert nr rows of map:");
     console.CheckKeyboardArray();
-    k=console.cgetc();
+    rows = console.ReadNumber(strNr ,3);
 
-    console.clrscr();
     console.gotoxy(10,40);
-    puts("INSERT NR COLS OF MAP");
+    console.cputc(135);
+    puts("Insert nr cols of map:");
     console.CheckKeyboardArray();
-    k=console.cgetc();
+    cols = console.ReadNumber(strNr, 3);
 
+    SetRowColNrItems(rows, cols);
+    ResetMap();
 }
 
 uint8_t Gui::WhichTABVisible(){
@@ -716,23 +738,36 @@ uint8_t tile;
 }
 
 void Gui::InputFileName(){
-char key,i;
 
 	console.gotoxy(0, 14);
 	console.cputc(135);
-	puts("Enter the file name: \n");
-	//console.gotoxy(31,14);
-    i=1;
-	do {
-		key = console.cgetc();
-        console.cputc(key); 
-        fileName[i] = key;
-	    if (key != 8) i++;
+	puts("Enter the file name for Map: \n");
 
-	} while (key != 13);//while ((key != 13) && (i <= LENFILENAMEMAX));
+    console.ReadString (fileName);
+}
 
-    //DrawBoardText((char *)fileName);
-    //console.write(fileName, i-2);
-    //sub #13 and the first position infact i start from 1
-    fileName[0]=i-2;
+void Gui::InputFileNameGfx(){
+
+	console.gotoxy(0, 14);
+	console.cputc(135);
+	puts("Enter the file name for Gfx: \n");
+
+    console.ReadString (fileNameGfx);
+
+}
+
+void Gui::ShowInfoTabFile(){
+
+	console.gotoxy(0, 40);
+	console.cputc(0x81);
+    sprintf(strInfo1, " File GFX: %s \n",fileNameGfx);
+	sprintf(strInfo2, " Nr. Tiles: %d \n",nr_tiles );
+    sprintf(strInfo3, " File Map: %s \n",fileName);
+	sprintf(strInfo4, " Nr. Rows: %d  Nr. Cols: %d \n",map.GetRows(), map.GetCols());
+
+	puts(strInfo1);
+	puts(strInfo2);
+	puts(strInfo3);
+	puts(strInfo4);
+
 }

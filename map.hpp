@@ -41,8 +41,8 @@ private:
 
 public:
 
-    uint8_t LoadMap(unsigned char * namefile);
-    uint8_t SaveMap(unsigned char * namefile);
+    uint8_t LoadMap(char * namefile);
+    uint8_t SaveMap(char * namefile);
     
     void AddItem(uint8_t imageID, uint8_t pos_x, uint8_t pos_y);
     void DelItem(uint8_t imageID, uint8_t pos_x, uint8_t pos_y);

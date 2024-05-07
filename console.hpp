@@ -88,6 +88,10 @@ public:
 
     void ReadLine(int line_read);
 
+    void ReadString(char * str);
+
+    int ReadNumber(char * str, int len);
+
 };
 
 
