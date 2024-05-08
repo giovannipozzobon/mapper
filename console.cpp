@@ -137,7 +137,7 @@ uint8_t i, key;
           str[i] = key;
       }
   }
-  
+  str[i+1]='\0'; //delimiter of string. Needed for API graphics
   str[0]=i;
   
 }
@@ -179,5 +179,16 @@ key_with_Modifier Console::get_char_modifier(){
   key_mod.modifier =KeyModifierStatus(key_mod.chr);
 
   return key_mod;
+
+}
+
+void Console::SetColorText(uint8_t colorText, uint8_t colorBackground){
+
+  API_PARAMETERS_ADDR[0] = colorText;
+  API_PARAMETERS_ADDR[1] = colorBackground;
+  *API_FUNCTION_ADDR  = API_FN_SET_COLOR_TEXT  ;
+  *API_COMMAND_ADDR   = API_GROUP_CONSOLE ;     
+
+  while(*API_COMMAND_ADDR) {}
 
 }

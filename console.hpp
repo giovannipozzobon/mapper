@@ -32,6 +32,7 @@ private:
     uint8_t API_FN_WRITE_CHAR_CURS  = (uint8_t )0x06 ; // API function Write Char Curs
     uint8_t API_FN_CURSOR_POS       = (uint8_t )0x07 ; // API function Cursor Pos
     uint8_t API_FN_CLEAR_SCREEN     = (uint8_t )0x0C ; // API function Clear Screen
+    uint8_t API_FN_SET_COLOR_TEXT   = (uint8_t )0x0F ; // API function Clear Screen
 
     // System functions (Group 1)
     uint8_t API_GROUP_SYSTEM        = (uint8_t )0x01 ; // API function group System
@@ -105,6 +106,8 @@ public:
     void ReadString(char * str);
 
     int ReadNumber(char * str, int len);
+
+    void SetColorText(uint8_t colorText, uint8_t colorBackground);
 
 };
 

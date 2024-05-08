@@ -2,6 +2,7 @@
 #define GUI_HPP
 
 #include <stdio.h>
+#include <string.h>
 #include "graphic.hpp"
 #include "blitter.hpp"
 #include "map.hpp"
@@ -76,8 +77,8 @@
 #define KEY_C_DOWN 	        19		// Cursor Down
 #define KEY_C_UP 		    23		// Cursor Up
 #define KEY_C_SPACE 		32		// Cursor Up
-#define KEY_C_F1     		70		// Fill
-#define KEY_C_F2     		102		// Fill
+#define KEY_C_R1     		82		// ReFill
+#define KEY_C_R2     		114	    // ReFill
 //#define KEY_C_Y1     		89		// Fill
 //#define KEY_C_Y2     		121		// Fill
 
@@ -90,8 +91,8 @@
 #define KEY_C_N2     		110		
 #define KEY_C_G1     		71		
 #define KEY_C_G2     		103	
-#define KEY_C_M1     		77		
-#define KEY_C_M2     		109	
+#define KEY_C_Z1     		90		
+#define KEY_C_Z2     		122	
 #define LENFILENAMEMAX      30
 
 
@@ -149,6 +150,12 @@ private:
 
 
     };
+
+    char cmdFile[50];
+    char cmdEditor[41];
+    char * cmdTiles;
+    char * cmdConfig;
+    
 
     Graphic graphic;
     Blitter blitter;
@@ -262,6 +269,7 @@ public:
 
     void DrawTilesInScreen();
 
+    void ReloadTab();
     
 };
 

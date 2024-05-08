@@ -1,6 +1,9 @@
 10 cls
 20 gload "graphics.gfx"
-30 mem = alloc($500)
-40 load "map0.map",mem
-50 tilemap mem,0,0
-60 tiledraw 0,0 to 256,208
+30 mem = alloc(2000)
+40 load "level0.bin",mem
+60 FOR i=100 TO 1424
+70   tilemap mem,0, i
+80   tiledraw 0,0 to 320,240
+90   wait 3
+100 NEXT

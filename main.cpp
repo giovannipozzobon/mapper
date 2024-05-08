@@ -53,9 +53,9 @@ int main(){
         key = console.get_char_modifier();
         if (key.chr != 0) gui.ActionKey(key);
     
-        sprintf(buffer," Key: %i Status: %i ", key.chr, key.modifier);
-        buffer[0]=20;
-        gui.DrawBoardText(buffer);
+        //sprintf(buffer," Key: %i Status: %i ", key.chr, key.modifier);
+        //buffer[0]=20;
+        //gui.DrawBoardText(buffer);
     /*
         console.gotoxy(10,20);
         puts(buffer);

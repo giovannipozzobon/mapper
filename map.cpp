@@ -93,7 +93,7 @@ uint8_t Map::LoadMap(char * namefile){
 uint8_t error=0;
 
     error=file.LoadFile((int) grid_addr_init, namefile);
-    if (error ==0){
+    if (error == 0){
         SetRowColNrItems(grid_addr_init[1],  grid_addr_init[2], 0);
         return OK;
     } else return ERROR;

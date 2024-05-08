@@ -7,6 +7,9 @@ Gui::Gui()
     int rows_grid = 20;
     int cols_grid = 15;
 
+    strcpy(cmdFile,"  Load (G)fx | (L)oad (S)ave (N)ew resi(Z)e Map");
+    cmdFile[0]= 46;
+
     //initialize map
     map.SetMapInitialAddress(MMAP_ADDRESS);
     map.SetMapMaxLen(MMAP_MAX_LEN);
@@ -29,19 +32,23 @@ void Gui::ReadGfxValue(){
     nr_sprite16 = value_gfx[2];
     nr_sprite32 = value_gfx[3];
     
-    sprintf(strText," %d %d %d ", nr_tiles, nr_sprite16, nr_sprite32);
-    strText[0]=40;
-    graphic.Gfx_DrawString(30,110,strText);
+    //sprintf(strText," %d %d %d ", nr_tiles, nr_sprite16, nr_sprite32);
+    //strText[0]=40;
+    //graphic.Gfx_DrawString(30,110,strText);
 
 }
 
 void  Gui::DrawTabs(){
 
     graphic.SetSolidFlag(1);
-    graphic.SetColor(COLOR_DARK_GRAY);
+    //Reset the strip
+    graphic.SetColor(COLOR_BLACK);
+    graphic.DrawRectangle(0,TITLE_TAB_Y1,320,TITLE_TAB_Y2);
 
     for (uint8_t t = 0; t < TAB_COUNT; t++)
     {
+        graphic.SetColor(COLOR_DARK_GRAY);
+        if (t == currentTab ) graphic.SetColor(COLOR_BLUE);
         graphic.DrawRectangle(TITLE_TAB_X1+t*TAB_WIDTH,TITLE_TAB_Y1,TITLE_TAB_X1+t*TAB_WIDTH+TAB_WIDTH-2,TITLE_TAB_Y2);
     }
     
@@ -51,7 +58,7 @@ void  Gui::DrawTextTabs(){
     char * tmpstr;
 
     graphic.SetSolidFlag(0);
-  
+       
     for (uint8_t t = 0; t < TAB_COUNT; t++)
     {
         tmpstr = tabname[t];
@@ -66,8 +73,11 @@ void  Gui::DrawTextTabs(){
 void Gui::DrawBoard(){
 
     graphic.SetSolidFlag(1);
-    graphic.SetColor(COLOR_LIGTH_GRAY);
-    graphic.DrawRectangle(TAB_BOARD_X1,TAB_BOARD_Y1,TAB_BOARD_X2,TAB_BOARD_Y2);
+    graphic.SetColor(COLOR_BLUE);
+    if (currentTab == TAB_EDITOR)
+        graphic.DrawRectangle(TAB_BOARD_X1,TAB_BOARD_Y1,TAB_BOARD_X2,TAB_BOARD_Y2);
+    else 
+        graphic.DrawRectangle(TAB_BOARD_X1,TAB_BOARD_Y1,320,TAB_BOARD_Y2);
 
 }
 
@@ -76,7 +86,7 @@ void Gui::DrawBoardText(char * str){
     DrawBoard(); // delete the previous text
     graphic.SetSolidFlag(0);
     graphic.SetColor(COLOR_WHITE);
-    graphic.Gfx_DrawString(30,232,str);
+    graphic.Gfx_DrawString(0,232,str);
 
 }
 
@@ -122,6 +132,7 @@ void Gui::DrawArea(uint8_t tab){
 
         // Prepare for imput
         DrawFilesBox();
+        DrawBoardText(cmdFile);
         /*
         graphic.SetColor(COLOR_WHITE);
         sprintf(strText," TAB %d",tab);
@@ -231,6 +242,7 @@ void Gui::DrawScreen()
         DrawTilesBox();
         DrawKeyTitle();
         LoadMapFromGrid(); 
+        DrawCursorSquare();
         break;
     case TAB_CONFIG:
         DrawArea(TAB_CONFIG);
@@ -364,11 +376,9 @@ int pos_with_offset;
     grid_cursor_Y_old = grid_cursor_Y;
 
 
-    //Print coordinate
-    graphic.SetSolidFlag(1);
-    graphic.SetColor(COLOR_BLACK); 
-    sprintf(strText," X:%d  Y:%d OX:%d OY:%d", grid_cursor_X, grid_cursor_Y, offset_X, offset_Y);
-    strText[0]=40;
+    //Print coordinate and Comand for Editor
+    sprintf(strText," X:%d  Y:%d   |  ^(R)efill Map", grid_cursor_X+offset_X, grid_cursor_Y+offset_Y);
+    strText[0]=35;
     DrawBoardText(strText);
 
 }
@@ -527,41 +537,54 @@ char key;
         case KEY_C_L1:
         case KEY_C_L2:
             console.clrscr();
+            console.SetColorText(COLOR_WHITE, COLOR_BLACK); 
             file.DisplayDirectory();
             console.CheckKeyboardArray();
             console.gotoxy(10,10);
             puts("LOAD FILE MAP \n");
             InputFileName();
-            DrawBoardText((char *)fileName);
+            //DrawBoardText((char *)fileName);
             error = map.LoadMap(fileName);
             // Set the offset for the grid
             if (error == 0){
                 offset_max_X = map.GetRows() - NR_TILES_HR;
                 offset_max_Y = map.GetCols() - NR_TILES_VE;
+                console.SetColorText(COLOR_GREEN, COLOR_BLACK); 
                 puts("\n \n FILE MAP LOADED");
-                console.cputc((char)error+48);
-            } else puts("\n \n ERROR IN LOAD MAP");
+            } else {
+                fileName[0]=0;
+                console.SetColorText(COLOR_RED, COLOR_BLACK); 
+                puts("\n \n ERROR IN LOAD MAP");
+            }
+            ReloadTab();
             break;
 
         case KEY_C_S1:
         case KEY_C_S2:
             console.clrscr();
+            console.SetColorText(COLOR_WHITE, COLOR_BLACK); 
             file.DisplayDirectory();
             console.CheckKeyboardArray();
             console.gotoxy(10,10);
             puts("SAVE FILE MAP \n");
             InputFileName();
-            DrawBoardText((char *)fileName);
+            //DrawBoardText((char *)fileName);
             error = map.SaveMap(fileName);
-            if (error == 0)
+            if (error == 0) {
+                console.SetColorText(COLOR_GREEN, COLOR_BLACK); 
                 puts("\n \n FILE MAP SAVED");
-            else 
+            } else {
+                fileName[0]=0;
+                console.SetColorText(COLOR_RED, COLOR_BLACK); 
                 puts("\n \n ERROR IN SAVE MAP");
+            }
+            ReloadTab();
             break;
 
         case KEY_C_N1:
         case KEY_C_N2:
             console.clrscr();
+            console.SetColorText(COLOR_WHITE, COLOR_BLACK); 
             console.gotoxy(10,10);
             puts("THE MAP WILL BE EMPTY.\n");
             console.gotoxy(10,20);
@@ -570,35 +593,48 @@ char key;
             k=console.cgetc();
             if ((k=='Y') || (k=='y')) { 
                 ResetMap();
+                console.SetColorText(COLOR_GREEN, COLOR_BLACK); 
                 puts("\n \n MAP IS EMPTY");
-            }else puts("\n \n DONE NOTHING ");
+            } else {
+                console.SetColorText(COLOR_RED, COLOR_BLACK); 
+                puts("\n \n DONE NOTHING ");
+            }
+            ReloadTab();
             break;
 
         case KEY_C_G1:
         case KEY_C_G2:
             console.clrscr();
+            console.SetColorText(COLOR_WHITE, COLOR_BLACK); 
             file.DisplayDirectory();
             console.CheckKeyboardArray();
             console.gotoxy(10,10);
             puts("CARICA FILE GFX\n");
             InputFileNameGfx();
-            DrawBoardText((char *)fileNameGfx);
+            //DrawBoardText((char *)fileNameGfx);
             error = file.LoadGrafix(fileNameGfx);
             if (error == 0) {
+                console.SetColorText(COLOR_GREEN, COLOR_BLACK); 
                 puts("\n \n FILE GFX LOADED\n");
                 ReadGfxValue();
             }
-            else 
+            else {
+                fileNameGfx[0]=0;
+                console.SetColorText(COLOR_RED, COLOR_BLACK); 
                 puts("\n \n ERROR IN SAVE MAP");
+            }
+            ReloadTab();
             break;
 
-        case KEY_C_M1:
-        case KEY_C_M2:
+        case KEY_C_Z1:
+        case KEY_C_Z2:
             console.clrscr();
+            console.SetColorText(COLOR_WHITE, COLOR_BLACK); 
             console.CheckKeyboardArray();
             console.gotoxy(10,10);
             puts("Insert the new size of map");
             SetNewMap();
+            ReloadTab();
             break;
 
         default:
@@ -620,8 +656,8 @@ char key;
     if (key_mod.modifier == console.KEY_ALT || key_mod.modifier == console.KEY_ALT_GR) {
         switch (key){
                 
-            case KEY_C_F1:
-            case KEY_C_F2:
+            case KEY_C_R1:
+            case KEY_C_R2:
                 FillGrid();
                 break;
 
@@ -699,6 +735,8 @@ char key;
                 break;
         }
     }
+
+    
 /*
     graphic.SetColor(COLOR_WHITE);
     graphic.SetSolidFlag(1);
@@ -739,23 +777,29 @@ void Gui::FillGrid(){
 
 
 void Gui::SetNewMap(){
-uint8_t k, rows, cols;
+uint8_t k, rows, cols, error;
 char strNr[10]; 
 
-    console.gotoxy(10,30);
+    console.gotoxy(0,30);
     console.cputc(135);
-    puts("Insert nr rows of map:");
+    puts("\n \nInsert nr rows of map:\n");
     console.CheckKeyboardArray();
     rows = console.ReadNumber(strNr ,3);
 
-    console.gotoxy(10,40);
-    console.cputc(135);
-    puts("Insert nr cols of map:");
+    puts("\n \nInsert nr cols of map:\n");
     console.CheckKeyboardArray();
     cols = console.ReadNumber(strNr, 3);
 
-    SetRowColNrItems(rows, cols);
-    ResetMap();
+    error =SetRowColNrItems(rows, cols);
+    if (error == 0) {
+        ResetMap();
+        console.SetColorText(COLOR_GREEN, COLOR_BLACK); 
+        puts("\n \n MAP RESIZE DONE \n \n");
+    }
+    else {
+        console.SetColorText(COLOR_RED, COLOR_BLACK); 
+        puts("\n \n MAP RISIZE ERROR \n \n");
+    }
 }
 
 uint8_t Gui::WhichTABVisible(){
@@ -801,8 +845,20 @@ void Gui::InputFileNameGfx(){
 
 void Gui::ShowInfoTabFile(){
 
+    sprintf(strInfo1, " File GFX: %s \n",fileNameGfx);
+	sprintf(strInfo2, " Nr. Tiles: %d \n",nr_tiles );
+    sprintf(strInfo3, " File Map: %s \n",fileName);
+	sprintf(strInfo4, " Nr. Rows: %d  Nr. Cols: %d \n",map.GetRows(), map.GetCols());
+
+    graphic.SetSolidFlag(0);
+    graphic.SetColor(COLOR_WHITE);
+    graphic.Gfx_DrawString(10,100,strInfo1);
+    graphic.Gfx_DrawString(10,120,strInfo2);
+    graphic.Gfx_DrawString(10,140,strInfo3);
+    graphic.Gfx_DrawString(10,160,strInfo4);
+    /*
 	console.gotoxy(0, 40);
-	console.cputc(0x81);
+	console.SetColorText(COLOR_WHITE, COLOR_DARK_GRAY);
     sprintf(strInfo1, " File GFX: %s \n",fileNameGfx);
 	sprintf(strInfo2, " Nr. Tiles: %d \n",nr_tiles );
     sprintf(strInfo3, " File Map: %s \n",fileName);
@@ -812,5 +868,14 @@ void Gui::ShowInfoTabFile(){
 	puts(strInfo2);
 	puts(strInfo3);
 	puts(strInfo4);
-
+    */
 }
+
+ void Gui::ReloadTab(){
+
+    puts("\n Press AnyKey \n");
+    console.CheckKeyboardArray();
+    console.cgetc();
+    DrawScreen();
+
+ }
