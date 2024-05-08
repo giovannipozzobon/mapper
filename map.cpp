@@ -90,18 +90,21 @@ int Map::GetMapAddress(){
 }
 
 uint8_t Map::LoadMap(char * namefile){
+uint8_t error=0;
 
-    file.LoadFile((int) grid_addr_init, namefile);
-    SetRowColNrItems(grid_addr_init[1],  grid_addr_init[2], 0);
-    return OK;
-
+    error=file.LoadFile((int) grid_addr_init, namefile);
+    if (error ==0){
+        SetRowColNrItems(grid_addr_init[1],  grid_addr_init[2], 0);
+        return OK;
+    } else return ERROR;
 }
 
 uint8_t Map::SaveMap(char * namefile){
+uint8_t error=0;
 
-    file.SaveFile((int) grid_addr_init, nr_item+3, namefile);
-    return OK;
-
+    error=file.SaveFile((int) grid_addr_init, nr_item+3, namefile);
+    if (error == 0) return OK;
+    return ERROR;
 }
 
 int Map::GetItems(){ return nr_item;}

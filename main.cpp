@@ -20,8 +20,10 @@ int main(){
 
 
     int k; 
-    char key='0';
+    //char key='0';
     uint8_t current_tab;
+    uint8_t kstatus;
+    key_with_Modifier key;
 
     //load Grafic file
     //file.LoadGrafix(nameFileGfx);
@@ -40,17 +42,26 @@ int main(){
 
         mouse.Read();
 
-        key = console.inkey();
+        //key = console.inkey();
         //if (key == keyboard.KEY_CURS_UP) key='U';
-        if (key != 0) gui.ActionKey(key);
-
+        //if (key != 0) gui.ActionKey(key);
+        //key='a';
         //kstatus =console.KeyModifierStatus(key);
         //sprintf(buffer," %d %d %d %d %c",mouse.X, mouse.Y, mouse.leftBtnUp, mouse.rigthBtnUp, key);
-        //sprintf(buffer," %i", key);
-        //buffer[0]=40;
-        //gui.DrawBoardText(buffer);
+        //sprintf(buffer," Key: %i  Status: %i", key, kstatus);
+
+        key = console.get_char_modifier();
+        if (key.chr != 0) gui.ActionKey(key);
     
+        sprintf(buffer," Key: %i Status: %i ", key.chr, key.modifier);
+        buffer[0]=20;
+        gui.DrawBoardText(buffer);
+    /*
+        console.gotoxy(10,20);
+        puts(buffer);
+    */
         util.nop_delay(5000);
+    
     }
      return 0;
 

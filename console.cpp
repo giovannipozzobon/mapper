@@ -113,7 +113,7 @@ uint8_t Console::KeyModifierStatus(uint8_t  chr){
   *API_FUNCTION_ADDR  = API_FN_KEY_STATUS;
   *API_COMMAND_ADDR   = API_GROUP_SYSTEM;   
   while(*API_COMMAND_ADDR) {}
-  return(API_PARAMETERS_ADDR[0]);            // Return parameter
+  return(API_PARAMETERS_ADDR[1]);            // Return parameter
 
 }
 
@@ -172,4 +172,12 @@ int value, dec;
 }
 
  
+key_with_Modifier Console::get_char_modifier(){
 
+  key_mod.chr = inkey();
+
+  key_mod.modifier =KeyModifierStatus(key_mod.chr);
+
+  return key_mod;
+
+}

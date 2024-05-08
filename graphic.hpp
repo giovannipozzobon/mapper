@@ -10,6 +10,8 @@ private:
 
     volatile uint8_t* API_COMMAND_ADDR    = (uint8_t*)0xFF00 ; // function group address
     volatile uint8_t* API_FUNCTION_ADDR   = (uint8_t*)0xFF01 ; // function address
+    volatile uint8_t* API_ERROR_ADDR      = (uint8_t*)0xFF02 ; // function errors
+    volatile uint8_t* API_STATUS_ADDR     = (uint8_t*)0xFF03 ; // function errors
     volatile uint8_t* API_PARAMETERS_ADDR = (uint8_t*)0xFF04 ; // function parameters base address (8 bytes)
 
     // Graphics functions (Group 5)
@@ -19,7 +21,7 @@ private:
     uint8_t API_DRAW_RECTANGLE      = (uint8_t )0x03 ; // API function ID Draw Rectangle 
     uint8_t API_DRAW_ELLIPSE        = (uint8_t )0x04 ; // API function ID Draw Ellipse 
     uint8_t API_DRAW_PIXEL          = (uint8_t )0x05 ; // API function ID Draw Pixel 
-    uint8_t API_FN_DRAW_STRING     = (uint8_t )0x06 ; // API function ID Write String
+    uint8_t API_FN_DRAW_STRING      = (uint8_t )0x06 ; // API function ID Write String
     uint8_t API_FN_DRAW_IMAGE       = (uint8_t )0x07 ; // API function ID Write Image
     uint8_t API_FN_DRAW_TILEMAP     = (uint8_t )0x08 ; // API function ID Draw TileMap
     uint8_t API_SET_PALETTE         = (uint8_t )0x20 ; // API function ID for set palette

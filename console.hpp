@@ -5,6 +5,12 @@
 #include <cstdint>
 #include <stdlib.h>
 
+typedef struct key_with_Modifier
+{
+    char chr = 0;
+    char modifier;
+    
+} key_with_Modifier;
 
 class Console {
 private:
@@ -13,6 +19,8 @@ private:
 
     volatile uint8_t* API_COMMAND_ADDR    = ( uint8_t*)0xFF00 ; // function group address
     volatile uint8_t* API_FUNCTION_ADDR   = ( uint8_t*)0xFF01 ; // function address
+    volatile uint8_t* API_ERROR_ADDR      = (uint8_t*)0xFF02 ; // function errors
+    volatile uint8_t* API_STATUS_ADDR     = (uint8_t*)0xFF03 ; // function errors
     volatile uint8_t* API_PARAMETERS_ADDR = ( uint8_t*)0xFF04 ; // function parameters base address (8 bytes)
 
     // Console functions (Group 2)
@@ -52,14 +60,20 @@ public:
     const uint8_t KEY_ESCAPE 		= 27;		// Exit
     const uint8_t KEY_SPACE 		= 32;		// Space
 
-    const uint8_t KEY_CTRL 		    = 32;		// Control
-    const uint8_t KEY_SHIFT 		= 32;		// Shift
-    const uint8_t KEY_ALT 		    =  32;		// Alt
+    const uint8_t KEY_CTRL 		    = 17;		// Control  Control
+    const uint8_t KEY_SHIFT 		= 34;		// Shift    Shift
+    const uint8_t KEY_ALT 		    =  4;		// Alt      Option SX
+    const uint8_t KEY_ALT_GR 		= 64;		// Alt Grt  Option DX
+
+
+    key_with_Modifier key_mod;
 
     // Get character from keyboard
     char inkey();
 
     char cgetc();
+
+    key_with_Modifier get_char_modifier();
 
     // Position cursor (API Group 2, Function 7)
     void gotoxy(uint8_t sx, uint8_t sy);

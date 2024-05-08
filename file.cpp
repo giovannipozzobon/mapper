@@ -1,24 +1,6 @@
 #include "file.hpp"
 
 
-uint8_t File::LoadGrafix(char * file){   
-
-	int ptr = (int) &file[0];	
-
-	while(*API_COMMAND_ADDR) {};    
-
-   	API_PARAMETERS_ADDR[0] = ptr & 0xFF; ;	//File name		
-    API_PARAMETERS_ADDR[1] = ptr >> 8;                      
-    API_PARAMETERS_ADDR[2] = 0xFF;		//grafics file
-    API_PARAMETERS_ADDR[3] = 0xFF;		//grafics file                    
- 
-   	*API_FUNCTION_ADDR     = API_FN_LOAD_FILE ;
-    *API_COMMAND_ADDR      = API_GROUP_FILE;
-    while(*API_COMMAND_ADDR) {};                          // Wait for the command to finish (not strictly required)
-	  return API_PARAMETERS_ADDR[0];
-
-}
-
 void File::DisplayDirectory()
 {
 	*API_FUNCTION_ADDR     = API_FN_CAT_DIR;
@@ -69,6 +51,25 @@ uint8_t File::WriteFile(uint8_t channel, int memory, int nrbyte)
     return nr_written_byte;
 }
 
+uint8_t File::LoadGrafix(char * file){   
+
+	int ptr = (int) &file[0];	
+
+	while(*API_COMMAND_ADDR) {};    
+
+   	API_PARAMETERS_ADDR[0] = ptr & 0xFF; ;	//File name		
+    API_PARAMETERS_ADDR[1] = ptr >> 8;                      
+    API_PARAMETERS_ADDR[2] = 0xFF;		//grafics file
+    API_PARAMETERS_ADDR[3] = 0xFF;		//grafics file                    
+ 
+   	*API_FUNCTION_ADDR     = API_FN_LOAD_FILE ;
+    *API_COMMAND_ADDR      = API_GROUP_FILE;
+    while(*API_COMMAND_ADDR) {};                          // Wait for the command to finish (not strictly required)
+	
+	return API_ERROR_ADDR[0];
+
+}
+
 
 uint8_t File::LoadFile( int memory, char * fileName)
 {
@@ -81,7 +82,9 @@ uint8_t File::LoadFile( int memory, char * fileName)
   	*API_COMMAND_ADDR      = API_GROUP_FILE ;
 
     while(*API_COMMAND_ADDR) {};                          // Wait for the command to finish (not strictly required)
-	  return API_PARAMETERS_ADDR[0];
+	
+	return API_ERROR_ADDR[0];
+
 }
 
 uint8_t File::SaveFile( int memory, int nrbyte , char * fileName)
@@ -98,5 +101,6 @@ uint8_t File::SaveFile( int memory, int nrbyte , char * fileName)
   	*API_COMMAND_ADDR      = API_GROUP_FILE ;
 
     while(*API_COMMAND_ADDR) {};                          // Wait for the command to finish (not strictly required)
-	  return API_PARAMETERS_ADDR[0];
+	
+	return API_ERROR_ADDR[0];
 }

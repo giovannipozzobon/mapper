@@ -385,6 +385,7 @@ void Gui::DrawTileInGrid(){
 
 void Gui::checkKeyForSelTile(char key){
     uint8_t pos;
+
     for (uint8_t i = 0; i < NR_ROWS_TILES*2+16; i++)
     {
 
@@ -445,65 +446,70 @@ void Gui::checkKeyForSelTile(char key){
 
 }
     
-void Gui::ActionKey(char key){
+void Gui::ActionKey(key_with_Modifier key_mod){
 uint8_t exit =0;
+char key;
 
-    // TODO: Verify is the keys are the TAB Key so change the TAB
-    switch (key)
-    {
-    case KEY_C_Q1: 
-    case KEY_C_Q2:
-        if (currentTab != TAB_FILES){
-            currentTab = TAB_FILES;
-            DrawScreen();
-            exit =  1;
-        }
-        break;
+    key =key_mod.chr;
 
-     case KEY_C_W1:
-     case KEY_C_W2:
-        if (currentTab != TAB_TILES){
-            currentTab = TAB_TILES;
-            DrawScreen();
-            exit =  1;
-        }
-        break;
+    if (key_mod.modifier == console.KEY_ALT || key_mod.modifier == console.KEY_ALT_GR) {
+        // TODO: Verify is the keys are the TAB Key so change the TAB
+        switch (key)
+        {
+        case KEY_C_F1: 
+        case KEY_C_F2:
+            if (currentTab != TAB_FILES){
+                currentTab = TAB_FILES;
+                DrawScreen();
+                exit =  1;
+            }
+            break;
 
-    case KEY_C_R1:
-    case KEY_C_R2:
-        if (currentTab != TAB_EDITOR){
-            currentTab = TAB_EDITOR;
-            DrawScreen(); 
-            exit =  1;
+        case KEY_C_T1:
+        case KEY_C_T2:
+            if (currentTab != TAB_TILES){
+                currentTab = TAB_TILES;
+                DrawScreen();
+                exit =  1;
+            }
+            break;
+
+        case KEY_C_E1:
+        case KEY_C_E2:
+            if (currentTab != TAB_EDITOR){
+                currentTab = TAB_EDITOR;
+                DrawScreen(); 
+                exit =  1;
+            }
+            break;
+            
+        case KEY_C_C1:
+        case KEY_C_C2:
+            if (currentTab != TAB_CONFIG){
+                currentTab = TAB_CONFIG;
+                DrawScreen(); 
+                exit =  1;
+            }
+            break;
+                            
+        default:
+            break;
         }
-        break;
-        
-    case KEY_C_T1:
-    case KEY_C_T2:
-        if (currentTab != TAB_CONFIG){
-            currentTab = TAB_CONFIG;
-            DrawScreen(); 
-            exit =  1;
-        }
-        break;
-                        
-    default:
-        break;
     }
 
     if (exit == 0) {
         switch (currentTab){
             case TAB_FILES:
-                ActionTabFile(key);
+                ActionTabFile(key_mod);
                 break;
             case TAB_TILES:
-                ActionTabTile(key);
+                ActionTabTile(key_mod);
                 break;
             case TAB_EDITOR:
-                ActionTabEditor(key);
+                ActionTabEditor(key_mod);
                 break;
             case TAB_CONFIG:
-                ActionTabConfig(key);
+                ActionTabConfig(key_mod);
                 break;
             default:
                 break;
@@ -511,8 +517,11 @@ uint8_t exit =0;
     }
 }
 
-void Gui::ActionTabFile(char key){
-uint8_t k;
+void Gui::ActionTabFile(key_with_Modifier key_mod){
+uint8_t k,error;
+char key;
+
+    key =key_mod.chr;
 
     switch (key){
         case KEY_C_L1:
@@ -524,11 +533,14 @@ uint8_t k;
             puts("LOAD FILE MAP \n");
             InputFileName();
             DrawBoardText((char *)fileName);
-            map.LoadMap(fileName);
+            error = map.LoadMap(fileName);
             // Set the offset for the grid
-            offset_max_X = map.GetRows() - NR_TILES_HR;
-            offset_max_Y = map.GetCols() - NR_TILES_VE;
-            puts("\n \n FILE MAP LOADED");
+            if (error == 0){
+                offset_max_X = map.GetRows() - NR_TILES_HR;
+                offset_max_Y = map.GetCols() - NR_TILES_VE;
+                puts("\n \n FILE MAP LOADED");
+                console.cputc((char)error+48);
+            } else puts("\n \n ERROR IN LOAD MAP");
             break;
 
         case KEY_C_S1:
@@ -540,18 +552,26 @@ uint8_t k;
             puts("SAVE FILE MAP \n");
             InputFileName();
             DrawBoardText((char *)fileName);
-            map.SaveMap(fileName);
-            puts("\n \n FILE MAP SAVED");
+            error = map.SaveMap(fileName);
+            if (error == 0)
+                puts("\n \n FILE MAP SAVED");
+            else 
+                puts("\n \n ERROR IN SAVE MAP");
             break;
 
         case KEY_C_N1:
         case KEY_C_N2:
             console.clrscr();
-            console.gotoxy(0,10);
-            puts("THE MAP WILL BE DELETE. ARE YOU SURE TO CONTINUE (Y/N)?");
+            console.gotoxy(10,10);
+            puts("THE MAP WILL BE EMPTY.\n");
+            console.gotoxy(10,20);
+            puts("ARE YOU SURE TO CONTINUE (Y/N)?");
             console.CheckKeyboardArray();
             k=console.cgetc();
-            if ((k=='Y') || (k=='y')) ResetMap();
+            if ((k=='Y') || (k=='y')) { 
+                ResetMap();
+                puts("\n \n MAP IS EMPTY");
+            }else puts("\n \n DONE NOTHING ");
             break;
 
         case KEY_C_G1:
@@ -563,13 +583,17 @@ uint8_t k;
             puts("CARICA FILE GFX\n");
             InputFileNameGfx();
             DrawBoardText((char *)fileNameGfx);
-            file.LoadGrafix(fileNameGfx);
-            puts("\n \n FILE GFX LOADED\n");
-            ReadGfxValue();
+            error = file.LoadGrafix(fileNameGfx);
+            if (error == 0) {
+                puts("\n \n FILE GFX LOADED\n");
+                ReadGfxValue();
+            }
+            else 
+                puts("\n \n ERROR IN SAVE MAP");
             break;
 
-        case KEY_C_A1:
-        case KEY_C_A2:
+        case KEY_C_M1:
+        case KEY_C_M2:
             console.clrscr();
             console.CheckKeyboardArray();
             console.gotoxy(10,10);
@@ -582,83 +606,98 @@ uint8_t k;
     }
 }
 
-void Gui::ActionTabTile(char key){
+void Gui::ActionTabTile(key_with_Modifier key_mod){
 
 }
 
 
-void Gui::ActionTabEditor(char key){
+void Gui::ActionTabEditor(key_with_Modifier key_mod){
 char tmp;
-    switch (key){
-        case KEY_PAG_DEC:
-            if (tiles_page>0) tiles_page--;
-            DrawTilesBox();
-            tmp='D';
-            break;
-        case KEY_PAG_INC:
-            if (tiles_page<end_tiles_page) tiles_page++;
-            DrawTilesBox();
-            tmp='I';
-            break;
-        case KEY_C_LEFT:
-            grid_cursor_X--;
-            if (grid_cursor_X < 0) {
-                offset_X--;
-                if (offset_X < 0) {
-                    offset_X = offset_max_X; 
-                    grid_cursor_X=NR_TILES_HR-1;
-                } else grid_cursor_X=0;
-                offset_changed = 1;
-            }
-            DrawCursorSquare();
-            break;
-        case KEY_C_RIGHT:
-            grid_cursor_X++;
-            if (grid_cursor_X >= NR_TILES_HR) {
-                offset_X++;
-                if (offset_X > offset_max_X){
-                    offset_X = 0;
-                    grid_cursor_X = 0;
-                } else grid_cursor_X = NR_TILES_HR-1;
-                offset_changed = 1;
-            }
-            DrawCursorSquare();
-            break;
-        case KEY_C_UP:
-            grid_cursor_Y--;
-            if (grid_cursor_Y < 0) {
-                offset_Y--;
-                if (offset_Y < 0){ 
-                    offset_Y = offset_max_Y; 
-                    grid_cursor_Y=NR_TILES_VE-1;
-                } else grid_cursor_Y=0;
-                offset_changed = 1;
-            }            
-            DrawCursorSquare();
-            break;
-        case KEY_C_DOWN:
-            grid_cursor_Y++;
-            if (grid_cursor_Y >= NR_TILES_VE){
-                offset_Y++;
-                if (offset_Y > offset_max_Y){
-                    offset_Y = 0;
-                    grid_cursor_Y = 0;
-                } else grid_cursor_Y =NR_TILES_VE-1; 
-                offset_changed = 1;        
-            }
-            DrawCursorSquare();
-            break;
-        case KEY_C_SPACE:
-            DrawTileInGrid();
-            break;
-        case KEY_C_Y1:
-        case KEY_C_Y2:
-            FillGrid();
-            break;
+char key;
 
-        default:
-            checkKeyForSelTile(key);
+    key =key_mod.chr;
+
+    if (key_mod.modifier == console.KEY_ALT || key_mod.modifier == console.KEY_ALT_GR) {
+        switch (key){
+                
+            case KEY_C_F1:
+            case KEY_C_F2:
+                FillGrid();
+                break;
+
+            default:
+            
             break;
+        }
+    }
+    else {
+
+        switch (key){
+            case KEY_PAG_DEC:
+                if (tiles_page>0) tiles_page--;
+                DrawTilesBox();
+                tmp='D';
+                break;
+            case KEY_PAG_INC:
+                if (tiles_page<end_tiles_page) tiles_page++;
+                DrawTilesBox();
+                tmp='I';
+                break;
+            case KEY_C_LEFT:
+                grid_cursor_X--;
+                if (grid_cursor_X < 0) {
+                    offset_X--;
+                    if (offset_X < 0) {
+                        offset_X = offset_max_X; 
+                        grid_cursor_X=NR_TILES_HR-1;
+                    } else grid_cursor_X=0;
+                    offset_changed = 1;
+                }
+                DrawCursorSquare();
+                break;
+            case KEY_C_RIGHT:
+                grid_cursor_X++;
+                if (grid_cursor_X >= NR_TILES_HR) {
+                    offset_X++;
+                    if (offset_X > offset_max_X){
+                        offset_X = 0;
+                        grid_cursor_X = 0;
+                    } else grid_cursor_X = NR_TILES_HR-1;
+                    offset_changed = 1;
+                }
+                DrawCursorSquare();
+                break;
+            case KEY_C_UP:
+                grid_cursor_Y--;
+                if (grid_cursor_Y < 0) {
+                    offset_Y--;
+                    if (offset_Y < 0){ 
+                        offset_Y = offset_max_Y; 
+                        grid_cursor_Y=NR_TILES_VE-1;
+                    } else grid_cursor_Y=0;
+                    offset_changed = 1;
+                }            
+                DrawCursorSquare();
+                break;
+            case KEY_C_DOWN:
+                grid_cursor_Y++;
+                if (grid_cursor_Y >= NR_TILES_VE){
+                    offset_Y++;
+                    if (offset_Y > offset_max_Y){
+                        offset_Y = 0;
+                        grid_cursor_Y = 0;
+                    } else grid_cursor_Y =NR_TILES_VE-1; 
+                    offset_changed = 1;        
+                }
+                DrawCursorSquare();
+                break;
+            case KEY_C_SPACE:
+                DrawTileInGrid();
+                break;
+            default:
+                checkKeyForSelTile(key);
+                break;
+        }
     }
 /*
     graphic.SetColor(COLOR_WHITE);
@@ -669,8 +708,12 @@ char tmp;
 */
 }
 
-void Gui::ActionTabConfig(char key){
+void Gui::ActionTabConfig(key_with_Modifier key_mod){
 char k;
+char key;
+
+    key =key_mod.chr;
+    
     switch (key){
         case KEY_C_N1:
         case KEY_C_N2:

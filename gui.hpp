@@ -48,6 +48,7 @@
 #define MAX_PAGE_TILE       5
 
 //Action Keys TAB Switch
+/*
 #define KEY_C_Q1             81
 #define KEY_C_Q2             113
 #define KEY_C_W1             87
@@ -56,6 +57,16 @@
 #define KEY_C_R2             114
 #define KEY_C_T1             84
 #define KEY_C_T2             116
+*/
+#define KEY_C_F1             70
+#define KEY_C_F2             102
+#define KEY_C_T1             84
+#define KEY_C_T2             116
+#define KEY_C_E1             69
+#define KEY_C_E2             101
+#define KEY_C_C1             67
+#define KEY_C_C2             99
+
 
 //Action Keys Editor
 #define KEY_PAG_DEC         60
@@ -65,8 +76,10 @@
 #define KEY_C_DOWN 	        19		// Cursor Down
 #define KEY_C_UP 		    23		// Cursor Up
 #define KEY_C_SPACE 		32		// Cursor Up
-#define KEY_C_Y1     		89		// Fill
-#define KEY_C_Y2     		121		// Fill
+#define KEY_C_F1     		70		// Fill
+#define KEY_C_F2     		102		// Fill
+//#define KEY_C_Y1     		89		// Fill
+//#define KEY_C_Y2     		121		// Fill
 
 //Action Keys File & Config
 #define KEY_C_L1		    76		
@@ -77,8 +90,8 @@
 #define KEY_C_N2     		110		
 #define KEY_C_G1     		71		
 #define KEY_C_G2     		103	
-#define KEY_C_A1     		65		
-#define KEY_C_A2     		97	
+#define KEY_C_M1     		77		
+#define KEY_C_M2     		109	
 #define LENFILENAMEMAX      30
 
 
@@ -106,11 +119,11 @@
 class Gui {
 private:
 
-    char tabname[TAB_COUNT][10] = {
-        {9, 'F', 'i', 'l', 'e', '(', 'Q', ')',' ',' '},
-        {9, 'T', 'i', 'l', 'e', 's','(', 'W', ')',' '},
-        {9, 'E', 'd', 'i', 't', 'o', 'r', '(', 'R', ')'},
-        {9, 'C', 'o', 'n', 'f', 'i', 'g', '(', 'T', ')'},
+    char tabname[TAB_COUNT][9] = {
+        {8, '(','F', ')', 'i', 'l', 'e', ' ', ' '},
+        {8, '(','T', ')', 'i', 'l', 'e', 's', ' '},
+        {8, '(','E', ')', 'd', 'i', 't', 'o', 'r'},
+        {8, '(','C', ')', 'o', 'n', 'f', 'i', 'g'},
 
     };
 
@@ -217,10 +230,10 @@ private:
     void ResetMap();
 
     // Functions to control the program
-    void ActionTabFile(char key);
-    void ActionTabTile(char key);
-    void ActionTabEditor(char key);
-    void ActionTabConfig(char key);
+    void ActionTabFile(key_with_Modifier key_mod);
+    void ActionTabTile(key_with_Modifier key_mod);
+    void ActionTabEditor(key_with_Modifier key_mod);
+    void ActionTabConfig(key_with_Modifier key_mod);
 
 
 public:
@@ -235,7 +248,7 @@ public:
 
     void ActionMouse(int x, int y, uint8_t btn1, uint8_t btn2);
     
-    void ActionKey(char key);
+    void ActionKey(key_with_Modifier key_mod);
 
     void ReadGfxValue();
 

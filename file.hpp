@@ -10,6 +10,8 @@ private:
 
     volatile uint8_t* API_COMMAND_ADDR    = (uint8_t*)0xFF00 ; // function group address
     volatile uint8_t* API_FUNCTION_ADDR   = (uint8_t*)0xFF01 ; // function address
+    volatile uint8_t* API_ERROR_ADDR      = (uint8_t*)0xFF02 ; // function errors
+    volatile uint8_t* API_STATUS_ADDR     = (uint8_t*)0xFF03 ; // function errors
     volatile uint8_t* API_PARAMETERS_ADDR = (uint8_t*)0xFF04 ; // function parameters base address (8 bytes)
 
     // File functions (Group 3)
