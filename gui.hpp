@@ -33,10 +33,11 @@
 #define COLOR_WHITE         7
 #define COLOR_BLACK         8
 #define COLOR_DARK_GRAY     9
+#define COLOR_LIGTH_GRAY    0xF
 #define COLOR_GREEN         2
+#define COLOR_DARK_GREEN    0xA
 #define COLOR_BLUE          4
 #define COLOR_RED           1
-#define COLOR_LIGTH_GRAY    0xF
 
 //Tiles Box Values
 #define START_POS_X         265
@@ -83,6 +84,8 @@
 //#define KEY_C_Y2     		121		// Fill
 
 //Action Keys File & Config
+#define KEY_C_A1		    65		
+#define KEY_C_A2	        97	
 #define KEY_C_L1		    76		
 #define KEY_C_L2	        108		
 #define KEY_C_S1 	        83		
@@ -116,6 +119,11 @@
 #define MMAP_ADDRESS  0xD000 // initial Address of grid's memory 
 #define MMAP_MAX_LEN  0x2000 // must be multiply of 20*15 tiles. 8K
 
+// info about position of mouse in screen
+#define MOUSEPOSTABBOX 6
+#define MOUSEPOSSCREEN 5
+#define MOUSEPOSEDITOR 4
+#define MOUSEPOSFILE 6
 
 class Gui {
 private:
@@ -128,14 +136,36 @@ private:
 
     };
 
-    // TAB_NUMBER x1,y1,x2,y2, Id Area/Id Action
-    char mapMouse[TAB_COUNT][6] = {
-        {TAB_FILES,1,0,TAB_WIDTH-2,11, 1},  //TAB FIles
-        {TAB_TILES,TAB_WIDTH*1,0,TAB_WIDTH*2-2,11,2}, //TAB Tiles
-        {TAB_EDITOR,TAB_WIDTH*2,0,TAB_WIDTH*3-2,11,2}, //TAB Editor
-        {TAB_CONFIG,TAB_WIDTH*3,0,TAB_WIDTH*4-2,11,4}, //TAB Config
+    // TAB_NUMBER x1,y1,x2,y2, Id Area/Key Action
+    char mapTabMouse[TAB_COUNT][MOUSEPOSTABBOX] = {
+        {TAB_FILES,1,0,TAB_WIDTH-2,11, KEY_C_F1},  //TAB FIles
+        {TAB_TILES,TAB_WIDTH*1,0,TAB_WIDTH*2-2,11,KEY_C_T1}, //TAB Tiles
+        {TAB_EDITOR,TAB_WIDTH*2,0,TAB_WIDTH*3-2,11,KEY_C_E1}, //TAB Editor
+        {TAB_CONFIG,TAB_WIDTH*3,0,TAB_WIDTH*4-2,11,KEY_C_C1}, //TAB Config
 
     };
+
+    char mapEditorMouse[MOUSEPOSEDITOR] [MOUSEPOSSCREEN]= {
+        {1,0,TAB_WIDTH-2,11, KEY_PAG_DEC},
+        {1,0,TAB_WIDTH-2,11, KEY_PAG_INC},
+        {1,0,TAB_WIDTH-2,11, KEY_C_SPACE},
+        {1,0,TAB_WIDTH-2,11, KEY_C_R1}
+    };
+
+    char mapFileMouse[MOUSEPOSFILE] [MOUSEPOSSCREEN] = {
+        {1,0,TAB_WIDTH-2,11, KEY_C_G1},
+        {1,0,TAB_WIDTH-2,11, KEY_C_L1},
+        {1,0,TAB_WIDTH-2,11, KEY_C_S1},
+        {1,0,TAB_WIDTH-2,11, KEY_C_A1},
+        {1,0,TAB_WIDTH-2,11, KEY_C_N1},
+        {1,0,TAB_WIDTH-2,11, KEY_C_Z1}
+    };
+
+    /*
+    char mapTileMouse[] = {
+
+    };
+    */
 
     // ASCII Key --> Tile There both uppercase lowercase letters 16 are the lowercase chars
     char Key_Tile[NR_ROWS_TILES*2+16][2] = {
@@ -151,10 +181,10 @@ private:
 
     };
 
-    char cmdFile[50];
-    char cmdEditor[41];
-    char * cmdTiles;
-    char * cmdConfig;
+    char cmdFile[61];
+    char cmdEditor[61];
+    char cmdTiles [61];
+    char cmdConfig [61];
     
 
     Graphic graphic;
@@ -165,7 +195,7 @@ private:
     Util util;
    
   
-    char strText [sizeof(int)*40+1];
+    char strText [61];
     char strChar[2]={1,65};
     char value_gfx [16];
     char fileName[LENFILENAMEMAX];
@@ -174,8 +204,8 @@ private:
     char strInfo2[41];  
     char strInfo3[41];
     char strInfo4[41];
-    char strInfo5[41];
-    char strInfo6[41];
+    char strInfo5[61];
+    char strInfo6[61];
 
     // Tiles Box variables
     uint8_t currentTab = 0;
@@ -253,7 +283,7 @@ public:
 
     void DrawBoardText(char * str);
 
-    void ActionMouse(int x, int y, uint8_t btn1, uint8_t btn2);
+    key_with_Modifier ActionMouse(int x, int y, uint8_t btn1, uint8_t btn2);
     
     void ActionKey(key_with_Modifier key_mod);
 

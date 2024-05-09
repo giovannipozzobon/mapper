@@ -7,8 +7,8 @@ Gui::Gui()
     int rows_grid = 20;
     int cols_grid = 15;
 
-    strcpy(cmdFile,"  Load (G)fx | (L)oad (S)ave (N)ew resi(Z)e Map");
-    cmdFile[0]= 46;
+    strcpy(cmdFile," (G)fx:Load | Map:(L)oad (S)ave Save(A)s (N)ew si(Z)e");
+    cmdFile[0]= 52;
 
     //initialize map
     map.SetMapInitialAddress(MMAP_ADDRESS);
@@ -18,6 +18,7 @@ Gui::Gui()
     // Set the offset for the grid
     offset_max_X = rows_grid - NR_TILES_HR;
     offset_max_Y = cols_grid - NR_TILES_VE;
+    tile_Selected = 0xff;
     map.SetCursor(0,0,0,0,0,0,0xff); //no tiles present in grid where is the cursor
    
  }
@@ -152,6 +153,11 @@ void Gui::DrawArea(uint8_t tab){
         graphic.SetColor(COLOR_DARK_GRAY);
         graphic.DrawRectangle(0,TITLE_TAB_Y2+1,320,TAB_BOARD_Y1-1);
         DrawTilesInScreen();
+        
+        //Print the Number of Tile and Gfx file name
+        sprintf(cmdTiles," Tiles Nr: %d | Gfx FileName:%s", nr_tiles, fileNameGfx);
+        cmdTiles[0]=60;
+        DrawBoardText(cmdTiles);
  
         /*
         graphic.SetColor(COLOR_WHITE);
@@ -334,13 +340,59 @@ void Gui::DrawKeyTitle(){
     graphic.Gfx_DrawString(START_POS_X+TILES_W_H+SPACE_TILE_CHAR+CHAR_LEN+CHAR_LEN-1, TAB_BOARD_Y1, strChar);
 }
 
-    void Gui::ActionMouse(int x, int y, uint8_t btn1, uint8_t btn2){
+key_with_Modifier Gui::ActionMouse(int x, int y, uint8_t btn1, uint8_t btn2){
+uint8_t i,t;
+key_with_Modifier key;
 
+    key.chr = 0;
+    key.modifier = 0;
+
+    if (btn1 == 1) {
+        for (i = 0; i < TAB_COUNT; i++)
+        {
+
+
+            if ((mapTabMouse[i][1] <= x) &&  (mapTabMouse[i][3] >= x)) 
+               if ((mapTabMouse[i][2] <= y) &&  (mapTabMouse[i][4] >= y)){
+                    key.modifier = console.KEY_ALT;
+                    key.chr = mapTabMouse[i][5];
+                    return key;
+               }
+        }
+
+        if (currentTab == TAB_EDITOR){
+            // Check map
+           if ((GRID_X1 <= x) &&  (GRID_X2 >= x)) 
+               if ((GRID_Y1 <= y) &&  (GRID_Y2 >= y)){
+                    grid_cursor_X = (x-GRID_X1)/TILES_W_H;
+                    grid_cursor_Y = (y-GRID_Y1)/TILES_W_H;
+                    key.modifier = 0;
+                    key.chr = KEY_C_SPACE;
+                    return key;
+               }
+            }
+        
+            // Check Tiles Box
+
+
+            //Check Cursor for change Tiles 
+
+
+        } else if (currentTab == TAB_FILES){
+
+        } else if (currentTab == TAB_TILES) {
+
+        }
+
+
+    return key;
 }
 
 void Gui::DrawCursorSquare(){
 int pos_with_offset;
 
+    if (tile_Selected == 0xff) return;
+    
     //pos_with_offset = offset_Y*STEP_GRID_Y*map.GetRows()+map.GetRows()*grid_cursor_Y_old+offset_X*STEP_GRID_X+grid_cursor_X_old;
     pos_with_offset = offset_Y_old*map.GetRows()+map.GetRows()*grid_cursor_Y_old+offset_X_old+grid_cursor_X_old;
      //Update information for old position of cursor
@@ -377,20 +429,20 @@ int pos_with_offset;
 
 
     //Print coordinate and Comand for Editor
-    sprintf(strText," X:%d  Y:%d   |  ^(R)efill Map", grid_cursor_X+offset_X, grid_cursor_Y+offset_Y);
-    strText[0]=35;
-    DrawBoardText(strText);
+    sprintf(cmdEditor," X:%d  Y:%d   |  ^(R)efill Map", grid_cursor_X+offset_X, grid_cursor_Y+offset_Y);
+    cmdEditor[0]=35;
+    DrawBoardText(cmdEditor);
 
 }
 
 void Gui::DrawTileInGrid(){
+   if (tile_Selected != 0xff){
+        graphic.DrawImage(GRID_X1+grid_cursor_X*TILES_W_H, GRID_Y1+grid_cursor_Y*TILES_W_H, tile_Selected); 
 
-    graphic.DrawImage(GRID_X1+grid_cursor_X*TILES_W_H, GRID_Y1+grid_cursor_Y*TILES_W_H, tile_Selected); 
-
-    // Set information for the cursor grid and save in grid
-    map.SetCursor(grid_cursor_X, grid_cursor_Y, offset_X, offset_Y, GRID_X1+grid_cursor_X*TILES_W_H, GRID_Y1+grid_cursor_Y*TILES_W_H, tile_Selected);
-    map.SaveCursorToGrid();
-
+        // Set information for the cursor grid and save in grid
+        map.SetCursor(grid_cursor_X, grid_cursor_Y, offset_X, offset_Y, GRID_X1+grid_cursor_X*TILES_W_H, GRID_Y1+grid_cursor_Y*TILES_W_H, tile_Selected);
+        map.SaveCursorToGrid();
+    }
 }
 
 void Gui::checkKeyForSelTile(char key){
@@ -559,8 +611,8 @@ char key;
             ReloadTab();
             break;
 
-        case KEY_C_S1:
-        case KEY_C_S2:
+        case KEY_C_A1:
+        case KEY_C_A2:
             console.clrscr();
             console.SetColorText(COLOR_WHITE, COLOR_BLACK); 
             file.DisplayDirectory();
@@ -580,7 +632,26 @@ char key;
             }
             ReloadTab();
             break;
-
+        case KEY_C_S1:
+        case KEY_C_S2:
+            console.clrscr();
+            console.SetColorText(COLOR_WHITE, COLOR_BLACK); 
+            if (strlen(fileName) != 0) {  
+                error = map.SaveMap(fileName);
+                if (error == 0) {
+                    console.SetColorText(COLOR_GREEN, COLOR_BLACK); 
+                    puts("\n \n FILE MAP SAVED");
+                } else {
+                    fileName[0]=0;
+                    console.SetColorText(COLOR_RED, COLOR_BLACK); 
+                    puts("\n \n ERROR IN SAVE MAP");
+                }
+            } else {
+                console.SetColorText(COLOR_RED, COLOR_BLACK);
+                puts("\n \n NO FILENAME: PLEASE USE SAVE AS");
+            }
+            ReloadTab();
+            break;
         case KEY_C_N1:
         case KEY_C_N2:
             console.clrscr();
@@ -728,7 +799,7 @@ char key;
                 DrawCursorSquare();
                 break;
             case KEY_C_SPACE:
-                DrawTileInGrid();
+                    DrawTileInGrid();
                 break;
             default:
                 checkKeyForSelTile(key);
@@ -849,6 +920,13 @@ void Gui::ShowInfoTabFile(){
 	sprintf(strInfo2, " Nr. Tiles: %d \n",nr_tiles );
     sprintf(strInfo3, " File Map: %s \n",fileName);
 	sprintf(strInfo4, " Nr. Rows: %d  Nr. Cols: %d \n",map.GetRows(), map.GetCols());
+	sprintf(strInfo6, " Max memory: %d  Used Memory: %d \n",map.GetMaxMemory(), map.GetUsedMemory());	
+    strInfo6[0]=60;
+
+    sprintf(strInfo5, " Mapper - Map editor for NEO6502            Vers 1.0");
+    strInfo5[0]=60;
+
+   
 
     graphic.SetSolidFlag(0);
     graphic.SetColor(COLOR_WHITE);
@@ -856,6 +934,10 @@ void Gui::ShowInfoTabFile(){
     graphic.Gfx_DrawString(10,120,strInfo2);
     graphic.Gfx_DrawString(10,140,strInfo3);
     graphic.Gfx_DrawString(10,160,strInfo4);
+    graphic.Gfx_DrawString(10,180,strInfo6);
+    
+    graphic.SetColor(COLOR_DARK_GREEN);
+    graphic.Gfx_DrawString(10,220,strInfo5);
     /*
 	console.gotoxy(0, 40);
 	console.SetColorText(COLOR_WHITE, COLOR_DARK_GRAY);

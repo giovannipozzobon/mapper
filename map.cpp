@@ -85,9 +85,6 @@ void Map::SaveCursorToGrid(){
     grid_addr_ram[cursor.cursor_grid_x+cursor.cursor_offset_x+(cursor.cursor_grid_y+cursor.cursor_offset_y)*NrRow] = cursor.imageID;
 }
 
-int Map::GetMapAddress(){
-    return (int) grid_addr_init;
-}
 
 uint8_t Map::LoadMap(char * namefile){
 uint8_t error=0;
@@ -110,6 +107,9 @@ uint8_t error=0;
 int Map::GetItems(){ return nr_item;}
 int Map::GetRows(){return NrRow;}
 int Map::GetCols(){return NrCol;}
+int Map::GetMaxMemory() {return max_len_map;}
+int Map::GetUsedMemory() {return nr_item;}
+int Map::GetMapAddress(){ return (int) grid_addr_init;}
 
 int Map::GetItemFromGrid(int index){
     return grid_addr_ram[index];

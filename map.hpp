@@ -62,6 +62,8 @@ public:
     int GetItems();
     int GetRows();
     int GetCols();
+    int GetMaxMemory();
+    int GetUsedMemory();
     int GetItemFromGrid(int index);
     void ResetMap();
     int FillMap(uint8_t value);

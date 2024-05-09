@@ -52,10 +52,15 @@ int main(){
 
         key = console.get_char_modifier();
         if (key.chr != 0) gui.ActionKey(key);
-    
-        //sprintf(buffer," Key: %i Status: %i ", key.chr, key.modifier);
-        //buffer[0]=20;
-        //gui.DrawBoardText(buffer);
+
+        mouse.Read();
+        key = gui.ActionMouse(mouse.X,mouse.Y,mouse.leftBtnDown,mouse.rigthBtnDown);
+        
+        if (key.chr != 0) gui.ActionKey(key);
+        sprintf(buffer," Key: %i Mod %i btn1: %d", key.chr,key.modifier, mouse.leftBtnDown);
+        buffer[0]=40;
+        
+        gui.DrawBoardText(buffer);
     /*
         console.gotoxy(10,20);
         puts(buffer);

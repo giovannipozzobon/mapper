@@ -1,4 +1,8 @@
-implement TAB per Load Save and input Rows and Cols
-implement Set New Map  
-move the input string (file name) to console
-Write to DrawBox the command text 
+Add information about actual map size  e max map size
+Iplement the Mouse support (map, tile selection)
+Add the name of program and versione in TAB File
+Highligth the name of currentTab in TabBox
+Add Save as
+Key TAB to move on TABs
+use more color for the information in screen
+write the help page

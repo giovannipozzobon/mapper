@@ -28,10 +28,15 @@ void Mouse::Read() {
     btnChanged = mouse_data.buttons ^ mBtnPrev;
     mBtnPrev = mouse_data.buttons;
 
+    leftBtnDown = mouse_data.buttons & 1;
+    rigthBtnDown = mouse_data.buttons & 2;
+
+    /*
     leftBtnDown = (btnChanged & mouse_data.buttons & 1) !=0;
     rigthBtnDown = (btnChanged & mouse_data.buttons & 2) !=0;
     leftBtnUp = ((btnChanged & 1) != 0) && ((mouse_data.buttons & 1) ==0);
     rigthBtnUp = ((btnChanged & 2) != 0) && ((mouse_data.buttons & 2) ==0);
+    */
 
     if (leftBtnUp) {  
         dblClick = DBL_CLICK_LEN;
