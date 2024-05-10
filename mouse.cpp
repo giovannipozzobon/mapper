@@ -88,13 +88,9 @@ void Mouse::GetMouseState(){
     
     *API_FUNCTION_ADDR  = API_FN_GET_MOUSE_STATE;
     *API_COMMAND_ADDR   = API_GROUP_MOUSE;  
-    mouse_data.mouse_x = API_PARAMETERS_ADDR[1];
-    mouse_data.mouse_x = mouse_data.mouse_x <<8;
-    mouse_data.mouse_x = API_PARAMETERS_ADDR[0];
+    mouse_data.mouse_x = API_PARAMETERS_ADDR[1] <<8 | API_PARAMETERS_ADDR[0];
 
-    mouse_data.mouse_y = API_PARAMETERS_ADDR[3];
-    mouse_data.mouse_y = mouse_data.mouse_y <<8;
-    mouse_data.mouse_y = API_PARAMETERS_ADDR[2];
+    mouse_data.mouse_y = API_PARAMETERS_ADDR[3] <<8 |API_PARAMETERS_ADDR[2];
 
     mouse_data.buttons = API_PARAMETERS_ADDR[4];
 

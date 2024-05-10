@@ -20,14 +20,15 @@
 #define TAB_BOARD_X2        START_POS_X-1
 #define TAB_BOARD_Y1        230
 #define TAB_BOARD_Y2        240
+#define TITLE_TAB_X1        0
+#define TITLE_TAB_X2        START_POS_X-1
 #define TITLE_TAB_Y1        0
 #define TITLE_TAB_Y2        10
-#define TITLE_TAB_X1        0
 
 #define TAB_FILES           0
 #define TAB_TILES           1
 #define TAB_EDITOR          2
-#define TAB_CONFIG          3
+#define TAB_HELP            3
 
 // Colors Values
 #define COLOR_WHITE         7
@@ -38,6 +39,8 @@
 #define COLOR_DARK_GREEN    0xA
 #define COLOR_BLUE          4
 #define COLOR_RED           1
+#define COLOR_YELLOW        3
+#define COLOR_ORANE         0xB
 
 //Tiles Box Values
 #define START_POS_X         265
@@ -66,8 +69,10 @@
 #define KEY_C_T2             116
 #define KEY_C_E1             69
 #define KEY_C_E2             101
-#define KEY_C_C1             67
-#define KEY_C_C2             99
+#define KEY_C_H1             72
+#define KEY_C_H2             104
+//#define KEY_C_C1             67
+//#define KEY_C_C2             99
 
 
 //Action Keys Editor
@@ -132,16 +137,16 @@ private:
         {8, '(','F', ')', 'i', 'l', 'e', ' ', ' '},
         {8, '(','T', ')', 'i', 'l', 'e', 's', ' '},
         {8, '(','E', ')', 'd', 'i', 't', 'o', 'r'},
-        {8, '(','C', ')', 'o', 'n', 'f', 'i', 'g'},
+        {8, '(','H', ')', 'e', 'l', 'p', ' ', ' '},
 
     };
 
     // TAB_NUMBER x1,y1,x2,y2, Id Area/Key Action
     char mapTabMouse[TAB_COUNT][MOUSEPOSTABBOX] = {
-        {TAB_FILES,1,0,TAB_WIDTH-2,11, KEY_C_F1},  //TAB FIles
+        {TAB_FILES,1,0,TAB_WIDTH-2,11, KEY_C_F1},  //TAB Files
         {TAB_TILES,TAB_WIDTH*1,0,TAB_WIDTH*2-2,11,KEY_C_T1}, //TAB Tiles
         {TAB_EDITOR,TAB_WIDTH*2,0,TAB_WIDTH*3-2,11,KEY_C_E1}, //TAB Editor
-        {TAB_CONFIG,TAB_WIDTH*3,0,TAB_WIDTH*4-2,11,KEY_C_C1}, //TAB Config
+        {TAB_HELP,TAB_WIDTH*3,0,TAB_WIDTH*4-2,11,KEY_C_H1}, //TAB Help
 
     };
 
@@ -184,7 +189,7 @@ private:
     char cmdFile[61];
     char cmdEditor[61];
     char cmdTiles [61];
-    char cmdConfig [61];
+    char cmdHelp [61];
     
 
     Graphic graphic;
@@ -236,7 +241,8 @@ private:
     int offset_max_Y=0; //Offset max Y for grid
     uint8_t offset_changed =0;
 
-
+    // Page Help 
+    uint8_t infoHelp = 1;
     
     // Functions to Draw screen
     void DrawTabs();
@@ -270,7 +276,7 @@ private:
     void ActionTabFile(key_with_Modifier key_mod);
     void ActionTabTile(key_with_Modifier key_mod);
     void ActionTabEditor(key_with_Modifier key_mod);
-    void ActionTabConfig(key_with_Modifier key_mod);
+    void ActionTabHelp(key_with_Modifier key_mod);
 
 
 public:
@@ -296,6 +302,7 @@ public:
     void FillGrid();
 
     void ShowInfoTabFile();
+    void ShowInfoTabHelp();
 
     void DrawTilesInScreen();
 

@@ -180,7 +180,7 @@ void Gui::DrawArea(uint8_t tab){
         */   
         break;
 
-    case TAB_CONFIG:
+    case TAB_HELP:
         graphic.SetSolidFlag(1);
         
         //Clear All
@@ -250,8 +250,8 @@ void Gui::DrawScreen()
         LoadMapFromGrid(); 
         DrawCursorSquare();
         break;
-    case TAB_CONFIG:
-        DrawArea(TAB_CONFIG);
+    case TAB_HELP:
+        DrawArea(TAB_HELP);
         break;
     
     default:
@@ -341,23 +341,23 @@ void Gui::DrawKeyTitle(){
 }
 
 key_with_Modifier Gui::ActionMouse(int x, int y, uint8_t btn1, uint8_t btn2){
-uint8_t i,t;
+uint8_t i,t, pos_y;
 key_with_Modifier key;
 
     key.chr = 0;
     key.modifier = 0;
 
     if (btn1 == 1) {
-        for (i = 0; i < TAB_COUNT; i++)
-        {
-
-
-            if ((mapTabMouse[i][1] <= x) &&  (mapTabMouse[i][3] >= x)) 
-               if ((mapTabMouse[i][2] <= y) &&  (mapTabMouse[i][4] >= y)){
-                    key.modifier = console.KEY_ALT;
-                    key.chr = mapTabMouse[i][5];
-                    return key;
-               }
+        if ((x >=TITLE_TAB_X1) && (x <= TITLE_TAB_X2)  && (y>=TITLE_TAB_Y1) && (y<= TITLE_TAB_Y2) ) {
+            for (i = 0; i < TAB_COUNT; i++)
+            {
+                if ((mapTabMouse[i][1] <= x) &&  (mapTabMouse[i][3] >= x)) 
+                if ((mapTabMouse[i][2] <= y) &&  (mapTabMouse[i][4] >= y)){
+                        key.modifier = console.KEY_ALT;
+                        key.chr = mapTabMouse[i][5];
+                        return key;
+                }
+            }
         }
 
         if (currentTab == TAB_EDITOR){
@@ -369,14 +369,47 @@ key_with_Modifier key;
                     key.modifier = 0;
                     key.chr = KEY_C_SPACE;
                     return key;
-               }
-            }
+                }
+            
         
             // Check Tiles Box
+            // Firsrt Col
+            if ((START_POS_X <= x) &&  (START_POS_X+TILES_W_H >= x)) 
+               if ((START_POS_Y <= y) &&  (START_POS_Y+ (TILES_W_H+1)*NR_ROWS_TILES >= y)){
+                    pos_y = (y-START_POS_Y)/(TILES_W_H+1);
+                    key.modifier = 0;
+                    key.chr = Key_Tile[pos_y][0];
+                    return key;
+                }
+                 
 
+            // Second Col      
+            if ((START_POS_X+TILES_W_H+SPACE_TILE_CHAR+CHAR_LEN <= x) &&  (START_POS_X+TILES_W_H+SPACE_TILE_CHAR+CHAR_LEN+TILES_W_H >= x)) 
+               if ((START_POS_Y <= y) &&  (START_POS_Y+ (TILES_W_H+1)*NR_ROWS_TILES >= y)){
+                    pos_y = (y-START_POS_Y)/(TILES_W_H+1);
+                    key.modifier = 0;
+                    key.chr = Key_Tile[pos_y+NR_ROWS_TILES][0];
+                    return key;
+               }
 
-            //Check Cursor for change Tiles 
+            //Check Cursor for change Tiles (<   > cxursor)
+            if (START_POS_X+CHAR_LEN <= x && START_POS_X+CHAR_LEN+8 >=x)
+                if ((TAB_BOARD_Y1-1 <= y) &&  (TAB_BOARD_Y1+8 >= y)){
+                    key.modifier = 0;
+                    key.chr = KEY_PAG_DEC;
+                    //delay the click id much fast
+                    util.nop_delay(5000);
+                    return key;           
+                }
 
+            if (START_POS_X+TILES_W_H+SPACE_TILE_CHAR+CHAR_LEN+CHAR_LEN <= x && START_POS_X+TILES_W_H+SPACE_TILE_CHAR+CHAR_LEN+TILES_W_H+CHAR_LEN*2  >=x)
+                if ((TAB_BOARD_Y1-1 <= y) &&  (TAB_BOARD_Y1+8 >= y)){
+                    key.modifier = 0;
+                    key.chr = KEY_PAG_INC;
+                    //delay the click id much fast
+                    util.nop_delay(5000);
+                    return key;           
+                }
 
         } else if (currentTab == TAB_FILES){
 
@@ -384,6 +417,7 @@ key_with_Modifier key;
 
         }
 
+    }
 
     return key;
 }
@@ -443,6 +477,11 @@ void Gui::DrawTileInGrid(){
         map.SetCursor(grid_cursor_X, grid_cursor_Y, offset_X, offset_Y, GRID_X1+grid_cursor_X*TILES_W_H, GRID_Y1+grid_cursor_Y*TILES_W_H, tile_Selected);
         map.SaveCursorToGrid();
     }
+
+    //Print coordinate and Comand for Editor. 
+    sprintf(cmdEditor," X:%d  Y:%d   |  ^(R)efill Map", grid_cursor_X+offset_X, grid_cursor_Y+offset_Y);
+    cmdEditor[0]=35;
+    DrawBoardText(cmdEditor);
 }
 
 void Gui::checkKeyForSelTile(char key){
@@ -545,11 +584,13 @@ char key;
             }
             break;
             
-        case KEY_C_C1:
-        case KEY_C_C2:
-            if (currentTab != TAB_CONFIG){
-                currentTab = TAB_CONFIG;
+        case KEY_C_H1:
+        case KEY_C_H2:
+            if (currentTab != TAB_HELP){
+                currentTab = TAB_HELP;
                 DrawScreen(); 
+                infoHelp = 1;
+                ShowInfoTabHelp();
                 exit =  1;
             }
             break;
@@ -570,8 +611,8 @@ char key;
             case TAB_EDITOR:
                 ActionTabEditor(key_mod);
                 break;
-            case TAB_CONFIG:
-                ActionTabConfig(key_mod);
+            case TAB_HELP:
+                ActionTabHelp(key_mod);
                 break;
             default:
                 break;
@@ -692,7 +733,7 @@ char key;
             else {
                 fileNameGfx[0]=0;
                 console.SetColorText(COLOR_RED, COLOR_BLACK); 
-                puts("\n \n ERROR IN SAVE MAP");
+                puts("\n \n ERROR IN GFX LOADED");
             }
             ReloadTab();
             break;
@@ -817,15 +858,22 @@ char key;
 */
 }
 
-void Gui::ActionTabConfig(key_with_Modifier key_mod){
+void Gui::ActionTabHelp(key_with_Modifier key_mod){
 char k;
 char key;
 
-    key =key_mod.chr;
+    key = key_mod.chr;
     
     switch (key){
-        case KEY_C_N1:
-        case KEY_C_N2:
+        case '1':
+            infoHelp = 1;
+            DrawArea(TAB_HELP);
+            ShowInfoTabHelp();
+            break;
+        case '2':
+            infoHelp = 2;
+            DrawArea(TAB_HELP);
+            ShowInfoTabHelp();
             break;
         default:
             break;
@@ -916,6 +964,12 @@ void Gui::InputFileNameGfx(){
 
 void Gui::ShowInfoTabFile(){
 
+    graphic.SetSolidFlag(0);
+
+    sprintf(strInfo1, " INFORMATION:");
+    graphic.SetColor(COLOR_ORANE);
+    graphic.Gfx_DrawString(10,40,strInfo1);
+
     sprintf(strInfo1, " File GFX: %s \n",fileNameGfx);
 	sprintf(strInfo2, " Nr. Tiles: %d \n",nr_tiles );
     sprintf(strInfo3, " File Map: %s \n",fileName);
@@ -923,18 +977,18 @@ void Gui::ShowInfoTabFile(){
 	sprintf(strInfo6, " Max memory: %d  Used Memory: %d \n",map.GetMaxMemory(), map.GetUsedMemory());	
     strInfo6[0]=60;
 
-    sprintf(strInfo5, " Mapper - Map editor for NEO6502            Vers 1.0");
+    sprintf(strInfo5, " Mapper - Map editor for NEO6502            Vers 1.1");
     strInfo5[0]=60;
 
    
 
-    graphic.SetSolidFlag(0);
+    
     graphic.SetColor(COLOR_WHITE);
-    graphic.Gfx_DrawString(10,100,strInfo1);
-    graphic.Gfx_DrawString(10,120,strInfo2);
-    graphic.Gfx_DrawString(10,140,strInfo3);
-    graphic.Gfx_DrawString(10,160,strInfo4);
-    graphic.Gfx_DrawString(10,180,strInfo6);
+    graphic.Gfx_DrawString(10,70,strInfo1);
+    graphic.Gfx_DrawString(10,90,strInfo2);
+    graphic.Gfx_DrawString(10,110,strInfo3);
+    graphic.Gfx_DrawString(10,130,strInfo4);
+    graphic.Gfx_DrawString(10,150,strInfo6);
     
     graphic.SetColor(COLOR_DARK_GREEN);
     graphic.Gfx_DrawString(10,220,strInfo5);
@@ -961,3 +1015,132 @@ void Gui::ShowInfoTabFile(){
     DrawScreen();
 
  }
+
+void Gui::ShowInfoTabHelp(){
+
+    graphic.SetSolidFlag(0);
+    graphic.SetColor(COLOR_WHITE);
+    strInfo5[0]=60;
+
+    if (infoHelp == 1){
+        sprintf(strInfo5, " Load the graphic file containing the tiles to use");
+        strInfo5[0]=60;
+        graphic.Gfx_DrawString(1,20,strInfo5);
+        sprintf(strInfo5, " with the \"Load Graphics\" function found in the File");
+        strInfo5[0]=60;
+        graphic.Gfx_DrawString(1,30,strInfo5);
+        sprintf(strInfo5, " tab. From here, you can also load a previously saved");
+        strInfo5[0]=60;
+        graphic.Gfx_DrawString(1,40,strInfo5);
+        sprintf(strInfo5, " map through the Save As commands. If you have already\n");
+        strInfo5[0]=60;
+        graphic.Gfx_DrawString(1,50,strInfo5);
+        sprintf(strInfo5, " set the file name using the Load Map or Save As \n");
+        strInfo5[0]=60;
+        graphic.Gfx_DrawString(1,60,strInfo5);
+        sprintf(strInfo5, " commands before, you can use the Save command to \n");
+        strInfo5[0]=60;
+        graphic.Gfx_DrawString(1,70,strInfo5);
+        sprintf(strInfo5, " avoid typing the file name again. If you want to");
+        strInfo5[0]=60;
+        graphic.Gfx_DrawString(1,80,strInfo5);    
+        sprintf(strInfo5, " change the file name, use the Save As command. The ");
+        strInfo5[0]=60;
+        graphic.Gfx_DrawString(1,90,strInfo5); 
+        sprintf(strInfo5, " character \"^\" indicates that the \"CTRL\" key must be");
+        strInfo5[0]=60;
+        graphic.Gfx_DrawString(1,100,strInfo5); 
+        sprintf(strInfo5, " pressed.");
+        strInfo5[0]=60;
+        graphic.Gfx_DrawString(1,110,strInfo5); 
+        sprintf(strInfo5, " You can configure the map using the Size command: you");
+        strInfo5[0]=60;
+        graphic.Gfx_DrawString(1,120,strInfo5);
+        sprintf(strInfo5, " will enter the values of the rows and columns of the");
+        strInfo5[0]=60;
+        graphic.Gfx_DrawString(1,130,strInfo5);
+        sprintf(strInfo5, " map. This will allow you to use a map larger than the ");
+        strInfo5[0]=60;
+        graphic.Gfx_DrawString(1,140,strInfo5);    
+        sprintf(strInfo5, " screen, enabling scrolling in your programs/games. ");
+        strInfo5[0]=60;
+        graphic.Gfx_DrawString(1,150,strInfo5); 
+        sprintf(strInfo5, " See the attached basic example to see how to do this. ");
+        strInfo5[0]=60;
+        graphic.Gfx_DrawString(1,160,strInfo5); 
+        sprintf(strInfo5, " Alternatively, see my demo of a game written in the ");
+        strInfo5[0]=60;
+        graphic.Gfx_DrawString(1,170,strInfo5); 
+        sprintf(strInfo5, " C language.");
+        strInfo5[0]=60;
+        graphic.Gfx_DrawString(1,180,strInfo5); 
+        sprintf(strInfo5, " Additionally, using the New command, you can delete");
+        strInfo5[0]=60;
+        graphic.Gfx_DrawString(1,190,strInfo5); 
+        sprintf(strInfo5, " /reset the map while keeping the size unchanged.");
+        strInfo5[0]=60;
+        graphic.Gfx_DrawString(1,200,strInfo5); 
+        sprintf(strInfo5, " In the Tiles tab, you can see all the tiles loaded ");
+        strInfo5[0]=60;
+        graphic.Gfx_DrawString(1,210,strInfo5); 
+        sprintf(strInfo5, " from the graphic file.");
+        strInfo5[0]=60;
+        graphic.Gfx_DrawString(1,220,strInfo5); 
+    } else {
+        sprintf(strInfo5, " In the Editor tab, you can draw the map. First, you");
+        strInfo5[0]=60;
+        graphic.Gfx_DrawString(1,20,strInfo5);
+        sprintf(strInfo5, " must have loaded them in the Files tab. Use the");
+        strInfo5[0]=60;
+        graphic.Gfx_DrawString(1,30,strInfo5);
+        sprintf(strInfo5, " arrow keys to navigate the map and the Space key");
+        strInfo5[0]=60;
+        graphic.Gfx_DrawString(1,40,strInfo5);
+        sprintf(strInfo5, " to copy the selected tile onto the map. Alternatively,");
+        strInfo5[0]=60;
+        graphic.Gfx_DrawString(1,50,strInfo5);
+        sprintf(strInfo5, " use the left mouse button. ");
+        strInfo5[0]=60;
+        graphic.Gfx_DrawString(1,60,strInfo5);
+        sprintf(strInfo5, " If the map is larger than the visible portion, use");
+        strInfo5[0]=60;
+        graphic.Gfx_DrawString(1,70,strInfo5);
+        sprintf(strInfo5, " the arrow keys to load the non-visible part.To select ");
+        strInfo5[0]=60;
+        graphic.Gfx_DrawString(1,80,strInfo5);
+        sprintf(strInfo5, " the tile, you can use the characters from \"0\" to \"P\" ");
+        strInfo5[0]=60;
+        graphic.Gfx_DrawString(1,90,strInfo5);
+        sprintf(strInfo5, " listed to the right of the tiles, or select one with the ");
+        strInfo5[0]=60;
+        graphic.Gfx_DrawString(1,100,strInfo5);
+        sprintf(strInfo5, " mouse (left button). There are 26 tiles in the box on ");
+        strInfo5[0]=60;
+        graphic.Gfx_DrawString(1,110,strInfo5);
+        sprintf(strInfo5, " the right. Use the \">\" key (or click on it with the ");
+        strInfo5[0]=60;
+        graphic.Gfx_DrawString(1,120,strInfo5);
+        sprintf(strInfo5, " mouse) to load another 26 tiles. Use the \"<\" key to");
+        strInfo5[0]=60;
+        graphic.Gfx_DrawString(1,130,strInfo5);
+        sprintf(strInfo5, " load the previous 26 tiles. You can use the Refill ");
+        strInfo5[0]=60;
+        graphic.Gfx_DrawString(1,140,strInfo5);
+        sprintf(strInfo5, " command to fill the map with the selected tile. Tiles ");
+        strInfo5[0]=60;
+        graphic.Gfx_DrawString(1,150,strInfo5);
+        sprintf(strInfo5, " already present in the map will not be overwritten.");
+        strInfo5[0]=60;
+        graphic.Gfx_DrawString(1,160,strInfo5);
+
+        graphic.SetColor(COLOR_DARK_GREEN);
+        sprintf(strInfo5, " Mapper by Giovanni Pozzobon aka Jobond - 2024");
+        strInfo5[0]=60;
+        graphic.Gfx_DrawString(1,220,strInfo5);
+    }
+    
+    strcpy(cmdHelp," (1) Page - (2) Page");
+    cmdHelp[0]= 20;
+    DrawBoardText(cmdHelp);
+
+}

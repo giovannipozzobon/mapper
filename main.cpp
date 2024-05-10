@@ -47,7 +47,7 @@ int main(){
         //if (key != 0) gui.ActionKey(key);
         //key='a';
         //kstatus =console.KeyModifierStatus(key);
-        //sprintf(buffer," %d %d %d %d %c",mouse.X, mouse.Y, mouse.leftBtnUp, mouse.rigthBtnUp, key);
+        //sprintf(buffer," %d %d %d %d",mouse.X, mouse.Y, mouse.leftBtnDown, mouse.leftBtnDown);
         //sprintf(buffer," Key: %i  Status: %i", key, kstatus);
 
         key = console.get_char_modifier();
@@ -57,10 +57,10 @@ int main(){
         key = gui.ActionMouse(mouse.X,mouse.Y,mouse.leftBtnDown,mouse.rigthBtnDown);
         
         if (key.chr != 0) gui.ActionKey(key);
-        sprintf(buffer," Key: %i Mod %i btn1: %d", key.chr,key.modifier, mouse.leftBtnDown);
-        buffer[0]=40;
+        //sprintf(buffer," Key: %i Mod %i btn1: %d", key.chr,key.modifier, mouse.leftBtnDown);
+        //buffer[0]=40;
         
-        gui.DrawBoardText(buffer);
+        //gui.DrawBoardText(buffer);
     /*
         console.gotoxy(10,20);
         puts(buffer);
